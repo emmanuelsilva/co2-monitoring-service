@@ -2,14 +2,12 @@ package org.emmanuel.co2.monitoring.business;
 
 import org.emmanuel.co2.monitoring.domain.Sensor;
 import org.emmanuel.co2.monitoring.repository.SensorRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class CreateSensorTest {

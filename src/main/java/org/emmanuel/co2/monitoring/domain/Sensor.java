@@ -4,6 +4,5 @@ import lombok.Value;
 
 @Value
 public class Sensor {
-
     private final String id;
 }

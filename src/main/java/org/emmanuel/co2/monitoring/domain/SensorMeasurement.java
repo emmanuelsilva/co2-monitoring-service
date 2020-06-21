@@ -7,11 +7,10 @@ import java.time.OffsetDateTime;
 @Value
 public class SensorMeasurement {
 
+    private final Sensor sensor;
+
     private final int value;
 
-    /**
-     * OffsetDateTime was chosen to persist time-zone offset as well.
-     **/
     private final OffsetDateTime timestamp;
 
 }
