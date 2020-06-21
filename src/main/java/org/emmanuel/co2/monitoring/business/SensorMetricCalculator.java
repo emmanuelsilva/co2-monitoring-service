@@ -9,7 +9,11 @@ public class SensorMetricCalculator {
 
     public SensorMetric computeMetrics(List<SensorMeasurement> measurements) {
         var statistics = measurements.stream().mapToInt(SensorMeasurement::getValue).summaryStatistics();
-        return new SensorMetric(statistics.getMax(), statistics.getAverage());
+        return new SensorMetric(statistics.getMax(), getRounded(statistics.getAverage()));
+    }
+
+    private double getRounded(double value) {
+        return Math.round(value * 100.0) / 100.0;
     }
 
 }

@@ -1,10 +1,13 @@
 package org.emmanuel.co2.monitoring.controller;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.emmanuel.co2.monitoring.domain.entity.SensorMetric;
 import org.emmanuel.co2.monitoring.dto.SensorMeasurementRequest;
 import org.emmanuel.co2.monitoring.service.SensorMeasurementService;
+import org.emmanuel.co2.monitoring.service.SensorMetricService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +20,7 @@ import java.time.OffsetDateTime;
 public class SensorController {
 
     private final SensorMeasurementService sensorMeasurementService;
+    private final SensorMetricService sensorMetricService;
 
     @PostMapping("/{sensorId}/mesurements")
     ResponseEntity<?> sensorMeasurementApi(@PathVariable("sensorId") String sensorId,
@@ -35,10 +39,27 @@ public class SensorController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/{sensorId}/metrics")
+    ResponseEntity<SensorMetricResponse> sensorMetricsApi(@PathVariable("sensorId") String sensorId) {
+        log.info("Request metrics for sensor {}", sensorId);
+
+        var metrics = sensorMetricService.getLast30DaysMetrics(sensorId);
+        var response = new SensorMetricResponse(metrics.getMax(), metrics.getAverage());
+
+        return ResponseEntity.ok().body(response);
+    }
+
     @Data
     private static class Co2MeasurementRequest {
         private int co2;
         private OffsetDateTime time;
+    }
+
+    @Data
+    @Builder
+    private static class SensorMetricResponse {
+        private int maxLast30Days;
+        private double avgLast30Days;
     }
 
 }
