@@ -1,28 +1,13 @@
 package org.emmanuel.co2.monitoring.business;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.emmanuel.co2.monitoring.domain.entity.Sensor;
-import org.emmanuel.co2.monitoring.domain.repository.SensorRepository;
-import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.function.Supplier;
-
-@Slf4j
-@RequiredArgsConstructor
-@Service
 public class CreateSensor {
 
-    private final SensorRepository sensorRepository;
-
-    public Sensor getOrCreate(String id) {
+    public Sensor create(String id) {
         this.validateRequiredFields(id);
-        Supplier<Sensor> onNonExistenceSensor = () -> this.sensorRepository.save(new Sensor(id));
-
-        return this.sensorRepository
-            .findById(id)
-            .orElseGet(onNonExistenceSensor);
+        return new Sensor(id);
     }
 
     private void validateRequiredFields(String id) {

@@ -7,11 +7,7 @@ import java.time.OffsetDateTime;
 
 @Value
 public class SensorMeasurement {
-
     private final Sensor sensor;
-
     private final int value;
-
     private final OffsetDateTime timestamp;
-
 }
