@@ -1,6 +1,6 @@
-package org.emmanuel.co2.monitoring.repository;
+package org.emmanuel.co2.monitoring.domain.repository;
 
-import org.emmanuel.co2.monitoring.domain.Sensor;
+import org.emmanuel.co2.monitoring.domain.entity.Sensor;
 
 import java.util.Optional;
 

@@ -8,12 +8,18 @@ TBD
 
 ## How to build
 
-TBD
+```sh
+./gradlew compileJava
+```
 
 ## How to test
 
-TBD
+```sh
+./gradlew test
+```
 
 ## How to running
 
-TBD
+```sh
+./gradlew bootRun
+```

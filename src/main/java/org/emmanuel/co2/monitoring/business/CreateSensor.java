@@ -1,33 +1,32 @@
 package org.emmanuel.co2.monitoring.business;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.emmanuel.co2.monitoring.domain.Sensor;
-import org.emmanuel.co2.monitoring.repository.SensorRepository;
+import org.emmanuel.co2.monitoring.domain.entity.Sensor;
+import org.emmanuel.co2.monitoring.domain.repository.SensorRepository;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @Slf4j
 @RequiredArgsConstructor
+@Service
 public class CreateSensor {
 
     private final SensorRepository sensorRepository;
 
-    public void create(Sensor sensor) {
-        this.validateRequiredFields(sensor);
+    public Sensor getOrCreate(String id) {
+        this.validateRequiredFields(id);
+        Supplier<Sensor> onNonExistenceSensor = () -> this.sensorRepository.save(new Sensor(id));
 
-        Consumer<Sensor> onExistentSensor = (savedSensor) -> log.info("ID {} already", savedSensor.getId());
-        Runnable onNonExistenceSensor = () -> this.sensorRepository.save(sensor);
-
-        this.sensorRepository
-            .findById(sensor.getId())
-            .ifPresentOrElse(onExistentSensor, onNonExistenceSensor);
+        return this.sensorRepository
+            .findById(id)
+            .orElseGet(onNonExistenceSensor);
     }
 
-    private void validateRequiredFields(Sensor sensor) {
-        if (StringUtils.isEmpty(sensor.getId())) {
+    private void validateRequiredFields(String id) {
+        if (StringUtils.isEmpty(id)) {
             throw new IllegalArgumentException("The sensor must contains valid id");
         }
     }

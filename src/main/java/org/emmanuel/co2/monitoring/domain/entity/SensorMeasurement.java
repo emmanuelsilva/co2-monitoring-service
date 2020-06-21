@@ -1,5 +1,6 @@
-package org.emmanuel.co2.monitoring.domain;
+package org.emmanuel.co2.monitoring.domain.entity;
 
+import lombok.Builder;
 import lombok.Value;
 
 import java.time.OffsetDateTime;

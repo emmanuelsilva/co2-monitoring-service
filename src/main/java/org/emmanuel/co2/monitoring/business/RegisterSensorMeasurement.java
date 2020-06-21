@@ -2,11 +2,13 @@ package org.emmanuel.co2.monitoring.business;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.emmanuel.co2.monitoring.domain.SensorMeasurement;
-import org.emmanuel.co2.monitoring.repository.SensorMeasurementRepository;
+import org.emmanuel.co2.monitoring.domain.entity.SensorMeasurement;
+import org.emmanuel.co2.monitoring.domain.repository.SensorMeasurementRepository;
+import org.springframework.stereotype.Service;
 
 @Slf4j
 @RequiredArgsConstructor
+@Service
 public class RegisterSensorMeasurement {
 
     private final SensorMeasurementRepository repository;

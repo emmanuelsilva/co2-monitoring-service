@@ -1,8 +1,8 @@
 package org.emmanuel.co2.monitoring.business;
 
-import org.emmanuel.co2.monitoring.domain.Sensor;
-import org.emmanuel.co2.monitoring.domain.SensorMeasurement;
-import org.emmanuel.co2.monitoring.repository.SensorMeasurementRepository;
+import org.emmanuel.co2.monitoring.domain.entity.Sensor;
+import org.emmanuel.co2.monitoring.domain.entity.SensorMeasurement;
+import org.emmanuel.co2.monitoring.domain.repository.SensorMeasurementRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

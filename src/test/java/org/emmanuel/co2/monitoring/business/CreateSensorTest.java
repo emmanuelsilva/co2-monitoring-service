@@ -1,13 +1,13 @@
 package org.emmanuel.co2.monitoring.business;
 
-import org.emmanuel.co2.monitoring.domain.Sensor;
-import org.emmanuel.co2.monitoring.repository.SensorRepository;
+import org.emmanuel.co2.monitoring.domain.entity.Sensor;
+import org.emmanuel.co2.monitoring.domain.repository.SensorRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class CreateSensorTest {
@@ -23,41 +23,44 @@ class CreateSensorTest {
 
     @Test
     void shouldFailWhenThereIsNoId() {
-        var sensor = new Sensor(null);
-        assertThrows(IllegalArgumentException.class, () -> this.createSensor.create(sensor));
+        assertThrows(IllegalArgumentException.class, () -> this.createSensor.getOrCreate(null));
         assertThatThereWasNoRepositoryInteraction();
     }
 
     @Test
     void shouldCreateValidSensor() {
-        var sensor = new Sensor("12345");
-        givenNonExistentSensorOnRepositoryBehavior(sensor);
-        this.createSensor.create(sensor);
+        var id = "12345";
+        givenNonExistentSensorOnRepositoryBehavior(id);
+        var sensor = this.createSensor.getOrCreate(id);
 
-        assertThatTriedToFindSensorOnDatabase(sensor);
+        assertNotNull(sensor);
+        assertThatTriedToFindSensorOnDatabase(id);
         assertThatSensorWasSaved(sensor);
     }
 
     @Test
     void shouldDoNotSaveAlreadyCreatedSensor() {
-        var sensor = new Sensor("12345");
-        givenExistentSensorOnRepositoryBehavior(sensor);
-        this.createSensor.create(sensor);
+        var id = "12345";
+        givenExistentSensorOnRepositoryBehavior(id);
+        var sensor = this.createSensor.getOrCreate(id);
 
-        assertThatTriedToFindSensorOnDatabase(sensor);
+        assertThatTriedToFindSensorOnDatabase(id);
         assertThatSensorWasNotSaved(sensor);
     }
 
-    private void assertThatTriedToFindSensorOnDatabase(Sensor sensor) {
-        verify(this.sensorRepository).findById(sensor.getId());
+    private void assertThatTriedToFindSensorOnDatabase(String id) {
+        verify(this.sensorRepository).findById(id);
     }
 
-    private void givenNonExistentSensorOnRepositoryBehavior(Sensor sensor) {
-        when(this.sensorRepository.findById(sensor.getId())).thenReturn(Optional.empty());
+    private void givenNonExistentSensorOnRepositoryBehavior(String id) {
+        var sensor = new Sensor(id);
+
+        when(this.sensorRepository.findById(id)).thenReturn(Optional.empty());
+        when(this.sensorRepository.save(sensor)).thenReturn(sensor);
     }
 
-    private void givenExistentSensorOnRepositoryBehavior(Sensor sensor) {
-        when(this.sensorRepository.findById(sensor.getId())).thenReturn(Optional.of(sensor));
+    private void givenExistentSensorOnRepositoryBehavior(String id) {
+        when(this.sensorRepository.findById(id)).thenReturn(Optional.of(new Sensor(id)));
     }
 
     private void assertThatSensorWasSaved(Sensor sensor) {
