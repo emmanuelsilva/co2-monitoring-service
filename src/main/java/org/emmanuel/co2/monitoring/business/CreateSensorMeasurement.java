@@ -1,11 +1,9 @@
 package org.emmanuel.co2.monitoring.business;
 
-import lombok.RequiredArgsConstructor;
 import org.emmanuel.co2.monitoring.domain.entity.Sensor;
 import org.emmanuel.co2.monitoring.domain.entity.SensorMeasurement;
 import org.emmanuel.co2.monitoring.dto.SensorMeasurementRequest;
 
-@RequiredArgsConstructor
 public class CreateSensorMeasurement {
 
     public SensorMeasurement create(Sensor sensor, SensorMeasurementRequest request) {
