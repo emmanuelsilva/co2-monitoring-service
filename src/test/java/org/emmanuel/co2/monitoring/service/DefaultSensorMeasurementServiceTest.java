@@ -65,13 +65,13 @@ class DefaultSensorMeasurementServiceTest {
     }
 
     @Test
-    void shouldThrowsErrorWhenThereIsNoSensorId() {
+    void shouldFailErrorWhenThereIsNoSensorId() {
         var request = buildWithoutSensorIdRequest();
         assertThrows(IllegalArgumentException.class, () -> service.measure(request));
     }
 
     @Test
-    void shouldThrowsErrorWhenThereIsNoTimestamp() {
+    void shouldFailErrorWhenThereIsNoTimestamp() {
         var request = buildWithoutTimeRequest();
         assertThrows(IllegalArgumentException.class, () -> service.measure(request));
     }

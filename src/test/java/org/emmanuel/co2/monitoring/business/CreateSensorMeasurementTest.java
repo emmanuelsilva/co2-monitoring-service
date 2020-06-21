@@ -20,7 +20,7 @@ class CreateSensorMeasurementTest {
     }
 
     @Test
-    void shouldRegisterValidMeasurement() {
+    void shouldCreateValidMeasurement() {
         var sensor = new Sensor("123");
         var request = SensorMeasurementRequest.builder()
                 .value(10)
