@@ -33,6 +33,7 @@ class SensorMetricCalculatorTest {
         assertEquals(expectedAvg, metrics.getAverage());
     }
 
+    @Test
     void shouldComputeAsZeroForEmptyMeasurements() {
         SensorMetricCalculator metricCalculator = new SensorMetricCalculator();
         var metrics = metricCalculator.computeMetrics(Collections.emptyList());

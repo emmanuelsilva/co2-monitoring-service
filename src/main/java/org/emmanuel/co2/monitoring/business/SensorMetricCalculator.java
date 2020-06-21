@@ -8,6 +8,11 @@ import java.util.List;
 public class SensorMetricCalculator {
 
     public SensorMetric computeMetrics(List<SensorMeasurement> measurements) {
+
+        if (measurements.isEmpty()) {
+            return new SensorMetric(0, 0.0);
+        }
+
         var statistics = measurements.stream().mapToInt(SensorMeasurement::getValue).summaryStatistics();
         return new SensorMetric(statistics.getMax(), getRounded(statistics.getAverage()));
     }
