@@ -5,8 +5,11 @@ import org.emmanuel.co2.monitoring.domain.entity.SensorMeasurement;
 import org.emmanuel.co2.monitoring.domain.repository.SensorMeasurementRepository;
 import org.emmanuel.co2.monitoring.domain.repository.SensorRepository;
 import org.emmanuel.co2.monitoring.dto.SensorMeasurementRequest;
+import org.emmanuel.co2.monitoring.event.SensorMeasuredEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.OffsetDateTime;
 import java.util.Optional;
@@ -18,18 +21,24 @@ class DefaultSensorMeasurementServiceTest {
 
     private DefaultSensorMeasurementService service;
     private SensorRepository sensorRepository;
+    private ApplicationEventPublisher eventPublisher;
     private SensorMeasurementRepository sensorMeasurementRepository;
 
     @BeforeEach
     void setUp() {
         this.sensorRepository = mock(SensorRepository.class);
         this.sensorMeasurementRepository = mock(SensorMeasurementRepository.class);
-        this.service = new DefaultSensorMeasurementService(sensorRepository, sensorMeasurementRepository);
+        this.eventPublisher = mock(ApplicationEventPublisher.class);
+
+        this.service = new DefaultSensorMeasurementService(
+                sensorRepository,
+                sensorMeasurementRepository,
+                eventPublisher);
     }
 
     @Test
     void shouldMeasureDataFromNonSavedSensor() {
-        SensorMeasurementRequest request = buildValidRequest();
+        SensorMeasurementRequest request = givenValidRequest();
         var sensor = new Sensor(request.getSensorId());
         var sensorMeasurement = new SensorMeasurement(sensor, request.getValue(), request.getTime());
 
@@ -40,15 +49,15 @@ class DefaultSensorMeasurementServiceTest {
         var result = this.service.measure(request);
 
         assertNotNull(result);
-        assertThatTriedToFindSensorOnDatabase(request);
         assertThatSavedSensorOnDatabase(sensor);
         assertThatSavedMeasurementOnDatabase(sensorMeasurement);
         assertThatWasCreatedMeasurementAsRequestedValues(request, result);
+        assertThatMeasuredEventWasPublished(sensorMeasurement);
     }
 
     @Test
     void shouldMeasureDataFromAlreadySavedSensor() {
-        SensorMeasurementRequest request = buildValidRequest();
+        SensorMeasurementRequest request = givenValidRequest();
         var sensor = new Sensor(request.getSensorId());
         var sensorMeasurement = new SensorMeasurement(sensor, request.getValue(), request.getTime());
 
@@ -58,46 +67,22 @@ class DefaultSensorMeasurementServiceTest {
         var result = this.service.measure(request);
 
         assertNotNull(result);
-        assertThatTriedToFindSensorOnDatabase(request);
         assertThatSavedSensorWasNotSaved(sensor);
         assertThatSavedMeasurementOnDatabase(sensorMeasurement);
         assertThatWasCreatedMeasurementAsRequestedValues(request, result);
+        assertThatMeasuredEventWasPublished(sensorMeasurement);
     }
 
     @Test
     void shouldFailErrorWhenThereIsNoSensorId() {
-        var request = buildWithoutSensorIdRequest();
+        var request = givenRequestWithoutSensorId();
         assertThrows(IllegalArgumentException.class, () -> service.measure(request));
     }
 
     @Test
     void shouldFailErrorWhenThereIsNoTimestamp() {
-        var request = buildWithoutTimeRequest();
+        var request = givenRequestWithoutTime();
         assertThrows(IllegalArgumentException.class, () -> service.measure(request));
-    }
-
-    private SensorMeasurementRequest buildValidRequest() {
-        return SensorMeasurementRequest.builder()
-                    .sensorId("12345")
-                    .time(OffsetDateTime.now())
-                    .value(100)
-                    .build();
-    }
-
-    private SensorMeasurementRequest buildWithoutSensorIdRequest() {
-        return SensorMeasurementRequest.builder()
-                .sensorId(null)
-                .time(OffsetDateTime.now())
-                .value(100)
-                .build();
-    }
-
-    private SensorMeasurementRequest buildWithoutTimeRequest() {
-        return SensorMeasurementRequest.builder()
-                .sensorId("12345")
-                .time(null)
-                .value(100)
-                .build();
     }
 
     private void assertThatWasCreatedMeasurementAsRequestedValues(SensorMeasurementRequest request, SensorMeasurement result) {
@@ -118,8 +103,10 @@ class DefaultSensorMeasurementServiceTest {
         verify(this.sensorRepository, never()).save(sensor);
     }
 
-    private void assertThatTriedToFindSensorOnDatabase(SensorMeasurementRequest request) {
-        verify(this.sensorRepository).findById(request.getSensorId());
+    private void assertThatMeasuredEventWasPublished(SensorMeasurement measurement) {
+        var eventCaptor = ArgumentCaptor.forClass(SensorMeasuredEvent.class);
+        verify(this.eventPublisher).publishEvent(eventCaptor.capture());
+        assertEquals(measurement, eventCaptor.getValue().getMeasurement());
     }
 
     private void givenSavedSensorMeasurement(SensorMeasurement sensorMeasurement) {
@@ -136,5 +123,29 @@ class DefaultSensorMeasurementServiceTest {
 
     private void givenExistentSensorOnRepository(Sensor sensor) {
         when(this.sensorRepository.findById(sensor.getId())).thenReturn(Optional.of(sensor));
+    }
+
+    private SensorMeasurementRequest givenValidRequest() {
+        return SensorMeasurementRequest.builder()
+                .sensorId("12345")
+                .time(OffsetDateTime.now())
+                .value(100)
+                .build();
+    }
+
+    private SensorMeasurementRequest givenRequestWithoutSensorId() {
+        return SensorMeasurementRequest.builder()
+                .sensorId(null)
+                .time(OffsetDateTime.now())
+                .value(100)
+                .build();
+    }
+
+    private SensorMeasurementRequest givenRequestWithoutTime() {
+        return SensorMeasurementRequest.builder()
+                .sensorId("12345")
+                .time(null)
+                .value(100)
+                .build();
     }
 }

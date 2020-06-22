@@ -8,6 +8,8 @@ import org.emmanuel.co2.monitoring.domain.entity.SensorMeasurement;
 import org.emmanuel.co2.monitoring.domain.repository.SensorMeasurementRepository;
 import org.emmanuel.co2.monitoring.domain.repository.SensorRepository;
 import org.emmanuel.co2.monitoring.dto.SensorMeasurementRequest;
+import org.emmanuel.co2.monitoring.event.SensorMeasuredEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.function.Supplier;
@@ -18,11 +20,14 @@ class DefaultSensorMeasurementService implements SensorMeasurementService {
 
     private final SensorRepository sensorRepository;
     private final SensorMeasurementRepository sensorMeasurementRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public SensorMeasurement measure(SensorMeasurementRequest request) {
         var sensor = this.getOrCreate(request.getSensorId());
-        return this.saveMeasurement(sensor, request);
+        var measurement =  this.saveMeasurement(sensor, request);
+        this.eventPublisher.publishEvent(new SensorMeasuredEvent(measurement));
+        return measurement;
     }
 
     private Sensor getOrCreate(String id) {
