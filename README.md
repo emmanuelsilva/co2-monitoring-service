@@ -24,6 +24,9 @@ TBD
 |  └─ event
 |  └─ exception
 |  └─ service 
+└─ tests
+|  └─ business
+|  └─ service
 ```
 
 ### packages responsability
@@ -72,8 +75,13 @@ Custom application exception.
 
 # Tests
 
-- Unit
-- Integration
+- ### business
+
+As business rules are business functions, mocks are not allowed here, so just testing individual and focused tests for each isolated function.
+
+- ### services
+
+To testing this layer, mock is allowed to simulate the integration with the external resources, such as repositories, event-bus, etc.
 
 ## Pre requisites
 
