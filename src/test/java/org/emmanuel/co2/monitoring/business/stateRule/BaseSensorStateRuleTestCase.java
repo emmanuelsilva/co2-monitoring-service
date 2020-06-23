@@ -28,7 +28,7 @@ public abstract class BaseSensorStateRuleTestCase {
         var now = OffsetDateTime.now();
         var warning = SensorWarning.create(sensor, now);
 
-        IntStream.rangeClosed(1, SensorThresholdConfiguration.MAX_ATTEMPTS.value() - 1)
+        IntStream.range(1, SensorThresholdConfiguration.MAX_ATTEMPTS.value())
                 .forEach(i -> warning.addHigherRead(new SensorMeasurement(sensor, i, now)));
 
         return new CurrentSensorState(sensor, SensorState.WARN, warning);
