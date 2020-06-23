@@ -59,8 +59,15 @@ class AlertDetectedSensorStateRuleTest extends BaseSensorStateRuleTestCase {
         assertEquals(SensorState.ALERT, result.getState());
 
         var alertOpt = result.getAlert();
+        var warningOpt = result.getWarning();
+
         assertTrue(alertOpt.isPresent());
-        assertEquals(4, alertOpt.get().getHigherReads().size());
+        assertTrue(warningOpt.isPresent());
+
+        var warningReads = warningOpt.get().getHigherReads().size();
+        var expectedReads = warningReads + 1; //all warning reads + 1 alert read
+
+        assertEquals(expectedReads, alertOpt.get().getHigherReads().size());
     }
 
 

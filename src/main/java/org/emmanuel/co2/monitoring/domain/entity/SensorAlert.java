@@ -1,6 +1,7 @@
 package org.emmanuel.co2.monitoring.domain.entity;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SensorAlert extends SensorWarning {
@@ -10,6 +11,6 @@ public class SensorAlert extends SensorWarning {
     }
 
     public static SensorAlert from(SensorWarning warning) {
-        return new SensorAlert(warning.getSensor(), warning.getStartAt(), null, warning.getHigherReads());
+        return new SensorAlert(warning.getSensor(), warning.getStartAt(), null, new ArrayList<>(warning.getHigherReads()));
     }
 }
