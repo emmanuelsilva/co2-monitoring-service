@@ -68,7 +68,12 @@ All application events. An event must be an immutable object.
 
 Custom application exception.
 
-### Pre requisites
+# Tests
+
+- Unit
+- Integration
+
+## Pre requisites
 
 Make sure you have all the following requisites before run:
 
