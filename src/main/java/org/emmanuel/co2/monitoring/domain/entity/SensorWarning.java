@@ -21,6 +21,10 @@ public class SensorWarning {
         this.higherReads.add(measurement.getValue());
     }
 
+    public boolean isOpened() {
+        return endAt == null;
+    }
+
     public static SensorWarning create(Sensor sensor, OffsetDateTime startAt) {
         return new SensorWarning(sensor, startAt, null, new ArrayList<>());
     }

@@ -13,16 +13,16 @@ public class ComputeCurrentSensorState {
     public CurrentSensorState compute(Sensor sensor, SensorWarning warning, SensorAlert alert) {
 
         var warningState = Optional.ofNullable(warning)
-                .filter(w -> w.getEndAt() == null)
+                .filter(SensorWarning::isOpened)
                 .map(w -> SensorState.WARN)
                 .orElse(SensorState.OK);
 
-        var finalState = Optional.ofNullable(alert)
-                .filter(a -> a.getEndAt() == null)
+        var currentState = Optional.ofNullable(alert)
+                .filter(SensorAlert::isOpened)
                 .map(a -> SensorState.ALERT)
                 .orElse(warningState);
 
-        return new CurrentSensorState(sensor, finalState, warning, alert);
+        return new CurrentSensorState(sensor, currentState, warning, alert);
     }
 
 }
