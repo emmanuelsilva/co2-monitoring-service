@@ -33,7 +33,7 @@ public class SensorWarning {
         return new SensorWarning(warning.getSensor(), warning.getStartAt(), warning.getEndAt(), warning.getHigherReads());
     }
 
-    public static SensorWarning ended(SensorWarning warning, OffsetDateTime endAt) {
+    public static SensorWarning end(SensorWarning warning, OffsetDateTime endAt) {
         return new SensorWarning(warning.getSensor(), warning.getStartAt(), endAt, warning.getHigherReads());
     }
 }

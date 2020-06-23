@@ -19,7 +19,7 @@ public class AlertDetectedSensorStateRule implements SensorStateRule {
         var sensor = currentState.getSensor();
         var warning = currentState.getWarning().orElseThrow(IllegalStateException::new);
 
-        var endedWarning = SensorWarning.ended(warning, measurement.getTimestamp());
+        var endedWarning = SensorWarning.end(warning, measurement.getTimestamp());
 
         var alert = SensorAlert.from(warning);
         alert.addHigherRead(measurement);
