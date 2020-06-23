@@ -5,7 +5,7 @@ import lombok.Value;
 import java.util.Optional;
 
 @Value
-public class CurrentSensorState {
+public class CurrentSensorState implements HasSensor {
 
     private final Sensor sensor;
     private final SensorState state;

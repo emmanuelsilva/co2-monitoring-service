@@ -10,7 +10,7 @@ import java.util.List;
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
-public class SensorWarning {
+public class SensorWarning implements HasSensor {
 
     private final Sensor sensor;
     private final OffsetDateTime startAt;
