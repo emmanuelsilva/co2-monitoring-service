@@ -22,7 +22,7 @@ public class SensorWarning {
         return new SensorWarning(sensor, startAt, null, new ArrayList<>());
     }
 
-    public static SensorWarning copy(SensorWarning warning, OffsetDateTime endAt) {
-        return new SensorWarning(warning.getSensor(), warning.getStartAt(), endAt, warning.getWarningReads());
+    public static SensorWarning copy(SensorWarning warning) {
+        return new SensorWarning(warning.getSensor(), warning.getStartAt(), warning.getEndAt(), warning.getWarningReads());
     }
 }

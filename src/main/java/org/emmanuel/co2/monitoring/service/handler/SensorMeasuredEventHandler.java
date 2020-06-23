@@ -37,6 +37,8 @@ public class SensorMeasuredEventHandler {
         var sensorRule = getSensorRule(currentState, measurement);
         var newState = sensorRule.defineState(currentState, measurement);
 
+        log.info("new state {}", newState);
+
         newState.getWarning().ifPresent(newWarning -> {
             var oldWarning = currentState.getWarning().orElse(null);
 

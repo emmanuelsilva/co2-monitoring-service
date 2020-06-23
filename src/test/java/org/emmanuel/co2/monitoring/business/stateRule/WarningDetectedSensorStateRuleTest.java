@@ -7,17 +7,25 @@ import org.emmanuel.co2.monitoring.domain.entity.SensorState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.OffsetDateTime;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-class WarningDetectedSensorStateRuleTest {
+class WarningDetectedSensorStateRuleTest extends BaseSensorStateRuleTestCase {
 
     private WarningDetectedSensorStateRule rule;
 
     @BeforeEach
     void setUp() {
         this.rule = new WarningDetectedSensorStateRule();
+    }
+
+    @Override
+    SensorState getState() {
+        return SensorState.OK;
+    }
+
+    @Override
+    public WarningDetectedSensorStateRule getRule() {
+        return rule;
     }
 
     @Test
@@ -27,16 +35,6 @@ class WarningDetectedSensorStateRuleTest {
         var warningMeasurement = getHigherThresholdMeasurement(sensor);
 
         var accepted = rule.accept(warnState, warningMeasurement);
-        assertFalse(accepted);
-    }
-
-    @Test
-    void shouldNotAcceptWhenMeasurementIsLowerThanThreshold() {
-        var sensor = new Sensor("123");
-        var okState = new CurrentSensorState(sensor, SensorState.OK);
-        var nonWarningMeasurement = getLowerThresholdMeasurement(sensor);
-
-        var accepted = rule.accept(okState, nonWarningMeasurement);
         assertFalse(accepted);
     }
 
@@ -70,19 +68,5 @@ class WarningDetectedSensorStateRuleTest {
         assertNull(warningOpt.get().getEndAt());
         assertEquals(1, warningOpt.get().getWarningReads().size());
         assertTrue(warningOpt.get().getWarningReads().contains(warningMeasurement.getValue()));
-    }
-
-    private SensorMeasurement getHigherThresholdMeasurement(Sensor sensor) {
-        return new SensorMeasurement(
-                    sensor,
-                    SensorThresholdConfiguration.THRESHOLD.value() + 500,
-                    OffsetDateTime.now());
-    }
-
-    private SensorMeasurement getLowerThresholdMeasurement(Sensor sensor) {
-        return new SensorMeasurement(
-                sensor,
-                SensorThresholdConfiguration.THRESHOLD.value() - 100,
-                OffsetDateTime.now());
     }
 }
