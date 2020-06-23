@@ -33,30 +33,19 @@ public class SensorMeasuredEventHandler {
         var sensor = measurement.getSensor();
         CurrentSensorState currentState = getCurrentSensorState(sensor);
 
-        log.info("current sensor state {}", currentState);
-        log.info("processing new measured event {}", measurement);
-
         var sensorRule = getSensorRule(currentState, measurement);
         var newState = sensorRule.defineState(currentState, measurement);
 
+        log.info("current sensor state {}", currentState);
+        log.info("processing new measured event {}", measurement);
         log.info("new state {}", newState);
 
         newState.getWarning().ifPresent(newWarning -> {
-            var oldWarning = currentState.getWarning().orElse(null);
-
-            if (!newWarning.equals(oldWarning)) {
-                log.info("warning state changed, saving on database");
-                this.sensorWarningRepository.save(newWarning);
-            }
+            this.sensorWarningRepository.save(newWarning);
         });
 
         newState.getAlert().ifPresent(newAlert -> {
-            var oldAlert = currentState.getAlert().orElse(null);
-
-            if (!newAlert.equals(oldAlert)) {
-                log.info("alert state changed, saving on database");
-                this.sensorAlertRepository.save(newAlert);
-            }
+            this.sensorAlertRepository.save(newAlert);
         });
 
     }

@@ -17,6 +17,7 @@ public abstract class InMemoryRepository<T> {
     }
 
     public T save(T record) {
+        this.records.removeIf(r -> r.equals(record));
         this.records.add(record);
         return record;
     }

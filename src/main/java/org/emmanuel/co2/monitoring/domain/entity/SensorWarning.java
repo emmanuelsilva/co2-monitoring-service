@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = {"endAt", "higherReads"})
 @RequiredArgsConstructor
 public class SensorWarning implements HasSensor {
 
