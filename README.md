@@ -6,6 +6,8 @@ Restful API to collect data from sensors to monitoring CO2 and create alerts whe
 
 # Architecture
 
+TBD
+
 ## Project organization
 
 ```yaml
