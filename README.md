@@ -4,23 +4,29 @@
 
 Restful API to collect data from sensors to monitoring CO2 and create alerts when concentrations reach critical levels.
 
-## Architecture
+### Pre requisites
+
+Make sure you have all the following requisites before run:
+
+- Java 14 or later
+
+# Architecture
 
 TBD
 
-## How to build
+# How to build
 
 ```sh
 ./gradlew compileJava
 ```
 
-## How to test
+# How to test
 
 ```sh
 ./gradlew test
 ```
 
-## How to running
+# How to running
 
 ```sh
 ./gradlew bootRun
