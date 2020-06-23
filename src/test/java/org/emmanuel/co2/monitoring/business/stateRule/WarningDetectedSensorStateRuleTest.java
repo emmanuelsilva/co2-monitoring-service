@@ -66,7 +66,7 @@ class WarningDetectedSensorStateRuleTest extends BaseSensorStateRuleTestCase {
 
         assertTrue(warningOpt.isPresent());
         assertNull(warningOpt.get().getEndAt());
-        assertEquals(1, warningOpt.get().getWarningReads().size());
-        assertTrue(warningOpt.get().getWarningReads().contains(warningMeasurement.getValue()));
+        assertEquals(1, warningOpt.get().getHigherReads().size());
+        assertTrue(warningOpt.get().getHigherReads().contains(warningMeasurement.getValue()));
     }
 }

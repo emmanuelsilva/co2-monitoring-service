@@ -23,7 +23,7 @@ public class IncrementWarningReadingSensorStateRule implements SensorStateRule {
         var warning = currentState.getWarning().orElseThrow(IllegalStateException::new);
 
         var incrementedWarning = SensorWarning.copy(warning);
-        incrementedWarning.addWarningRead(measurement);
+        incrementedWarning.addHigherRead(measurement);
 
         var warningState = new CurrentSensorState(sensor, SensorState.WARN, incrementedWarning);
 
@@ -33,6 +33,6 @@ public class IncrementWarningReadingSensorStateRule implements SensorStateRule {
     private boolean inWarnState(CurrentSensorState currentState, SensorMeasurement measurement) {
         return SensorState.WARN.equals(currentState.getState())
                 && measurement.getValue() > THRESHOLD
-                && currentState.getWarning().get().getWarningReads().size() < MAX_WARNING_ATTEMPTS;
+                && currentState.getWarning().get().getHigherReads().size() < MAX_WARNING_ATTEMPTS;
     }
 }

@@ -20,7 +20,7 @@ public class WarningDetectedSensorStateRule implements SensorStateRule {
     public CurrentSensorState defineState(CurrentSensorState currentState, SensorMeasurement measurement) {
         var sensor = currentState.getSensor();
         var sensorWarning = SensorWarning.create(sensor, measurement.getTimestamp());
-        sensorWarning.addWarningRead(measurement);
+        sensorWarning.addHigherRead(measurement);
 
         var warningState = new CurrentSensorState(sensor, SensorState.WARN, sensorWarning);
 

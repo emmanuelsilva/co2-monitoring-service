@@ -1,21 +1,24 @@
 package org.emmanuel.co2.monitoring.domain.entity;
 
-import lombok.Value;
+import lombok.*;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Value
+@Getter
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
 public class SensorWarning {
 
     private final Sensor sensor;
     private final OffsetDateTime startAt;
     private final OffsetDateTime endAt;
-    private final List<Integer> warningReads;
+    private final List<Integer> higherReads;
 
-    public void addWarningRead(SensorMeasurement measurement) {
-        this.warningReads.add(measurement.getValue());
+    public void addHigherRead(SensorMeasurement measurement) {
+        this.higherReads.add(measurement.getValue());
     }
 
     public static SensorWarning create(Sensor sensor, OffsetDateTime startAt) {
@@ -23,6 +26,10 @@ public class SensorWarning {
     }
 
     public static SensorWarning copy(SensorWarning warning) {
-        return new SensorWarning(warning.getSensor(), warning.getStartAt(), warning.getEndAt(), warning.getWarningReads());
+        return new SensorWarning(warning.getSensor(), warning.getStartAt(), warning.getEndAt(), warning.getHigherReads());
+    }
+
+    public static SensorWarning ended(SensorWarning warning, OffsetDateTime endAt) {
+        return new SensorWarning(warning.getSensor(), warning.getStartAt(), endAt, warning.getHigherReads());
     }
 }

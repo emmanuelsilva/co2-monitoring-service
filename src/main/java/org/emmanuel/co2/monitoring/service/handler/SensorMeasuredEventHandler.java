@@ -8,6 +8,7 @@ import org.emmanuel.co2.monitoring.business.stateRule.SensorStateRule;
 import org.emmanuel.co2.monitoring.domain.entity.CurrentSensorState;
 import org.emmanuel.co2.monitoring.domain.entity.Sensor;
 import org.emmanuel.co2.monitoring.domain.entity.SensorMeasurement;
+import org.emmanuel.co2.monitoring.domain.repository.SensorAlertRepository;
 import org.emmanuel.co2.monitoring.domain.repository.SensorWarningRepository;
 import org.emmanuel.co2.monitoring.event.SensorMeasuredEvent;
 import org.springframework.context.event.EventListener;
@@ -22,6 +23,7 @@ import java.util.List;
 public class SensorMeasuredEventHandler {
 
     private final SensorWarningRepository sensorWarningRepository;
+    private final SensorAlertRepository sensorAlertRepository;
     private final List<SensorStateRule> sensorStateRules;
 
     @Async
@@ -48,13 +50,23 @@ public class SensorMeasuredEventHandler {
             }
         });
 
+        newState.getAlert().ifPresent(newAlert -> {
+            var oldAlert = currentState.getAlert().orElse(null);
+
+            if (!newAlert.equals(oldAlert)) {
+                log.info("alert state changed, saving on database");
+                this.sensorAlertRepository.save(newAlert);
+            }
+        });
+
     }
 
     private CurrentSensorState getCurrentSensorState(Sensor sensor) {
         var warning = sensorWarningRepository.findActiveBySensorId(sensor.getId()).orElse(null);
+        var alert = sensorAlertRepository.findActiveBySensorId(sensor.getId()).orElse(null);
 
         ComputeCurrentSensorState sensorState = new ComputeCurrentSensorState();
-        return sensorState.compute(sensor, warning);
+        return sensorState.compute(sensor, warning, alert);
     }
 
     private SensorStateRule getSensorRule(CurrentSensorState currentSensorState, SensorMeasurement measurement) {

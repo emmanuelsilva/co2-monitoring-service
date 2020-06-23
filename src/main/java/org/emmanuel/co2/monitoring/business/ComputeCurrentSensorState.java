@@ -1,21 +1,28 @@
 package org.emmanuel.co2.monitoring.business;
 
-import org.emmanuel.co2.monitoring.domain.entity.CurrentSensorState;
-import org.emmanuel.co2.monitoring.domain.entity.Sensor;
-import org.emmanuel.co2.monitoring.domain.entity.SensorState;
-import org.emmanuel.co2.monitoring.domain.entity.SensorWarning;
+import org.emmanuel.co2.monitoring.domain.entity.*;
 
 import java.util.Optional;
 
 public class ComputeCurrentSensorState {
 
     public CurrentSensorState compute(Sensor sensor, SensorWarning warning) {
-        var state = Optional.ofNullable(warning)
+        return this.compute(sensor, warning, null);
+    }
+
+    public CurrentSensorState compute(Sensor sensor, SensorWarning warning, SensorAlert alert) {
+
+        var warningState = Optional.ofNullable(warning)
                 .filter(w -> w.getEndAt() == null)
                 .map(w -> SensorState.WARN)
                 .orElse(SensorState.OK);
 
-        return new CurrentSensorState(sensor, state, warning);
+        var finalState = Optional.ofNullable(alert)
+                .filter(a -> a.getEndAt() == null)
+                .map(a -> SensorState.ALERT)
+                .orElse(warningState);
+
+        return new CurrentSensorState(sensor, finalState, warning, alert);
     }
 
 }

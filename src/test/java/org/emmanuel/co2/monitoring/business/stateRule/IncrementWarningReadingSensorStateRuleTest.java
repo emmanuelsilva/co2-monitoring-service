@@ -53,7 +53,7 @@ class IncrementWarningReadingSensorStateRuleTest extends BaseSensorStateRuleTest
     void shouldIncrementWarningAttempts() {
         var sensor = new Sensor("123");
         var warning = SensorWarning.create(sensor, OffsetDateTime.now());
-        warning.addWarningRead(new SensorMeasurement(sensor,  5000, OffsetDateTime.now()));
+        warning.addHigherRead(new SensorMeasurement(sensor,  5000, OffsetDateTime.now()));
 
         var warnState = new CurrentSensorState(sensor, SensorState.WARN, warning);
         var warningMeasurement = getHigherThresholdMeasurement(sensor);
@@ -69,17 +69,6 @@ class IncrementWarningReadingSensorStateRuleTest extends BaseSensorStateRuleTest
 
         var warningOpt = result.getWarning();
         assertTrue(warningOpt.isPresent());
-        assertEquals(2, warningOpt.get().getWarningReads().size());
+        assertEquals(2, warningOpt.get().getHigherReads().size());
     }
-
-    private CurrentSensorState givenWarningWithReachMaxWarnAttempt(Sensor sensor) {
-        var now = OffsetDateTime.now();
-        var warning = SensorWarning.create(sensor, now);
-
-        IntStream.rangeClosed(1, SensorThresholdConfiguration.MAX_ATTEMPTS.value())
-                .forEach(i -> warning.addWarningRead(new SensorMeasurement(sensor, i, now)));
-
-        return new CurrentSensorState(sensor, SensorState.WARN, warning);
-    }
-
 }
