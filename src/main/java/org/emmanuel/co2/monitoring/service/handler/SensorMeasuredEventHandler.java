@@ -41,7 +41,7 @@ public class SensorMeasuredEventHandler {
             var oldWarning = currentState.getWarning().orElse(null);
 
             if (!newWarning.equals(oldWarning)) {
-                log.info("warning changed");
+                log.info("warning state changed, saving on database");
                 this.sensorWarningRepository.save(newWarning);
             }
         });
