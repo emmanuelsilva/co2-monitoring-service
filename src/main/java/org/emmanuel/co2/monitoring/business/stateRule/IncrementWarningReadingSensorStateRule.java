@@ -14,7 +14,7 @@ public class IncrementWarningReadingSensorStateRule implements SensorStateRule {
 
     @Override
     public boolean accept(CurrentSensorState currentState, SensorMeasurement measurement) {
-        return inWarnState(currentState, measurement);
+        return willStayWarnState(currentState, measurement);
     }
 
     @Override
@@ -30,9 +30,13 @@ public class IncrementWarningReadingSensorStateRule implements SensorStateRule {
         return warningState;
     }
 
-    private boolean inWarnState(CurrentSensorState currentState, SensorMeasurement measurement) {
+    private boolean willStayWarnState(CurrentSensorState currentState, SensorMeasurement measurement) {
+        var maxWarningAttempts = currentState.getWarning()
+                .map(w -> w.getHigherReads().size() < MAX_WARNING_ATTEMPTS - 1)
+                .orElse(false);
+
         return SensorState.WARN.equals(currentState.getState())
                 && measurement.getValue() > THRESHOLD
-                && currentState.getWarning().get().getHigherReads().size() < MAX_WARNING_ATTEMPTS;
+                && maxWarningAttempts;
     }
 }

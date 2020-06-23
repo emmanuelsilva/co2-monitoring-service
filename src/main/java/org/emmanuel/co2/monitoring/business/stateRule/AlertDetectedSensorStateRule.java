@@ -11,7 +11,7 @@ public class AlertDetectedSensorStateRule implements SensorStateRule {
 
     @Override
     public boolean accept(CurrentSensorState currentState, SensorMeasurement measurement) {
-        return reachMaxWarningAttempts(currentState, measurement);
+        return willReachMaxWarningAttempts(currentState, measurement);
     }
 
     @Override
@@ -29,9 +29,13 @@ public class AlertDetectedSensorStateRule implements SensorStateRule {
         return alertState;
     }
 
-    private boolean reachMaxWarningAttempts(CurrentSensorState currentState, SensorMeasurement measurement) {
+    private boolean willReachMaxWarningAttempts(CurrentSensorState currentState, SensorMeasurement measurement) {
+        var maxWarningAttemptsReach = currentState.getWarning()
+                .map(w -> w.getHigherReads().size() + 1 == MAX_WARNING_ATTEMPTS)
+                .orElse(false);
+
         return SensorState.WARN.equals(currentState.getState())
                 && measurement.getValue() > THRESHOLD
-                && currentState.getWarning().get().getHigherReads().size() == MAX_WARNING_ATTEMPTS;
+                && maxWarningAttemptsReach;
     }
 }

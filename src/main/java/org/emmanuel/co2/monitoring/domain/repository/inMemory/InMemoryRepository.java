@@ -13,7 +13,7 @@ public abstract class InMemoryRepository<T> {
     private Set<T> records;
 
     protected InMemoryRepository() {
-        this.records = new HashSet<>();
+        this.records = Collections.synchronizedSet(new HashSet<>());
     }
 
     public T save(T record) {

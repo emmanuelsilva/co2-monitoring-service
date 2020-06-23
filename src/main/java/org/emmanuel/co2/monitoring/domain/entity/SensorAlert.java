@@ -23,6 +23,15 @@ public class SensorAlert extends SensorWarning {
         return new SensorAlert(sensor, startAt, endAt, Collections.emptyList(), Collections.emptyList());
     }
 
+    public static SensorAlert end(SensorAlert alert, OffsetDateTime endAt) {
+        return new SensorAlert(
+                alert.getSensor(),
+                alert.getStartAt(),
+                endAt,
+                alert.getHigherReads(),
+                alert.getLowerReads());
+    }
+
     public static SensorAlert from(SensorWarning warning) {
         return new SensorAlert(
                 warning.getSensor(),

@@ -26,6 +26,13 @@ public class CurrentSensorState implements HasSensor {
         this.alert = null;
     }
 
+    public CurrentSensorState(Sensor sensor, SensorState state, SensorAlert alert) {
+        this.sensor = sensor;
+        this.state = state;
+        this.warning = null;
+        this.alert = alert;
+    }
+
     public CurrentSensorState(Sensor sensor, SensorState state, SensorWarning warning, SensorAlert alert) {
         this.sensor = sensor;
         this.state = state;
