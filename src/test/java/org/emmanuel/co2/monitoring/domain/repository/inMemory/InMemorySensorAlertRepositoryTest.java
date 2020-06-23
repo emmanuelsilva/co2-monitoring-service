@@ -6,7 +6,6 @@ import org.emmanuel.co2.monitoring.domain.repository.ActiveBySensorFinder;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.time.OffsetDateTime;
-import java.util.Collections;
 
 class InMemorySensorAlertRepositoryTest extends ActiveBySensorFinderTestCase<SensorAlert> {
 
@@ -26,14 +25,14 @@ class InMemorySensorAlertRepositoryTest extends ActiveBySensorFinderTestCase<Sen
     SensorAlert getActiveMock() {
         var sensor = new Sensor("123");
         var now = OffsetDateTime.now();
-        return new SensorAlert(sensor, now, null, Collections.emptyList());
+        return SensorAlert.create(sensor, now);
     }
 
     @Override
     SensorAlert getInactiveMock() {
         var sensor = new Sensor("123");
         var now = OffsetDateTime.now();
-        return new SensorAlert(sensor, now, now, Collections.emptyList());
+        return SensorAlert.create(sensor, now, now);
     }
 
     @BeforeEach

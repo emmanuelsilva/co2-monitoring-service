@@ -7,9 +7,9 @@ import org.emmanuel.co2.monitoring.domain.entity.SensorWarning;
 import org.junit.jupiter.api.Test;
 
 import java.time.OffsetDateTime;
-import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class ComputeCurrentSensorStateTest {
 
@@ -41,7 +41,7 @@ class ComputeCurrentSensorStateTest {
         var sensor = new Sensor("123");
         var now = OffsetDateTime.now();
 
-        var warning = new SensorWarning(sensor, now, now, Collections.emptyList());
+        var warning = SensorWarning.create(sensor, now, now);
         var alert = SensorAlert.from(warning);
 
         ComputeCurrentSensorState computeCurrentSensorState = new ComputeCurrentSensorState();

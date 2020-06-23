@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.OffsetDateTime;
-import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -88,7 +87,7 @@ class DefaultSensorStatusServiceTest {
 
     private void givenExistentAlert(Sensor sensor) {
         var now = OffsetDateTime.now();
-        var alert = new SensorAlert(sensor, now, null, Collections.emptyList());
+        var alert = SensorAlert.create(sensor, now);
         when(this.sensorAlertRepository.findActiveBySensorId(sensor.getId())).thenReturn(Optional.of(alert));
     }
 }

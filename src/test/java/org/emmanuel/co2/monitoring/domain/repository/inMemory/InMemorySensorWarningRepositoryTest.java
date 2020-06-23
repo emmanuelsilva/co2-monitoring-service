@@ -26,14 +26,14 @@ class InMemorySensorWarningRepositoryTest extends ActiveBySensorFinderTestCase<S
     SensorWarning getActiveMock() {
         var sensor = new Sensor("123");
         var now = OffsetDateTime.now();
-        return new SensorWarning(sensor, now, null, Collections.emptyList());
+        return SensorWarning.create(sensor, now);
     }
 
     @Override
     SensorWarning getInactiveMock() {
         var sensor = new Sensor("123");
         var now = OffsetDateTime.now();
-        return new SensorWarning(sensor, now, now, Collections.emptyList());
+        return SensorWarning.create(sensor, now, now);
     }
 
     @BeforeEach
