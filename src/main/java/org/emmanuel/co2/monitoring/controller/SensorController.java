@@ -4,9 +4,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.emmanuel.co2.monitoring.domain.entity.SensorMetric;
 import org.emmanuel.co2.monitoring.domain.entity.SensorState;
 import org.emmanuel.co2.monitoring.dto.SensorMeasurementRequest;
+import org.emmanuel.co2.monitoring.service.SensorAlertService;
 import org.emmanuel.co2.monitoring.service.SensorMeasurementService;
 import org.emmanuel.co2.monitoring.service.SensorMetricService;
 import org.emmanuel.co2.monitoring.service.SensorStatusService;
@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -24,6 +25,7 @@ public class SensorController {
     private final SensorMeasurementService sensorMeasurementService;
     private final SensorMetricService sensorMetricService;
     private final SensorStatusService sensorStatusService;
+    private final SensorAlertService sensorAlertService;
 
     @PostMapping("/{sensorId}/mesurements")
     ResponseEntity<?> sensorMeasurementApi(@PathVariable("sensorId") String sensorId,
@@ -60,6 +62,26 @@ public class SensorController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/{sensorId}/alerts")
+    ResponseEntity<?> getAlerts(@PathVariable("sensorId") String sensorId) {
+        var alerts = this.sensorAlertService.getAlerts(sensorId);
+        var response = alerts
+        .stream()
+        .map(a -> {
+            var higherReads = a.getHigherReads();
+
+            return SensorAlertResponse.builder()
+                    .startTime(a.getStartAt())
+                    .endTime(a.getEndAt())
+                    .measurement1(higherReads.get(0))
+                    .measurement2(higherReads.get(1))
+                    .measurement3(higherReads.get(2))
+                    .build();
+        });
+
+        return ResponseEntity.ok(response);
+    }
+
     @Data
     private static class Co2MeasurementRequest {
         private int co2;
@@ -77,6 +99,16 @@ public class SensorController {
     @Builder
     private static class SensorStatusResponse {
         private SensorState status;
+    }
+
+    @Data
+    @Builder
+    private static class SensorAlertResponse {
+        private OffsetDateTime startTime;
+        private OffsetDateTime endTime;
+        private int measurement1;
+        private int measurement2;
+        private int measurement3;
     }
 
 }
