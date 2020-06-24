@@ -1,15 +1,13 @@
 package org.emmanuel.co2.monitoring.business.stateRule;
 
-import org.emmanuel.co2.monitoring.domain.entity.*;
+import org.emmanuel.co2.monitoring.domain.entity.CurrentSensorState;
+import org.emmanuel.co2.monitoring.domain.entity.SensorState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.OffsetDateTime;
+import static org.junit.jupiter.api.Assertions.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-class IncrementLowerAlertReadingSensorStateRuleTest {
+class IncrementLowerAlertReadingSensorStateRuleTest extends BaseSensorStateRuleTestCase {
 
     private IncrementLowerAlertReadingSensorStateRule rule;
 
@@ -19,36 +17,42 @@ class IncrementLowerAlertReadingSensorStateRuleTest {
     }
 
     @Test
-    void shouldAcceptAlertStateAndLowerMeasurement() {
-        var sensor = new Sensor("123");
-        var now = OffsetDateTime.now();
-        var warning = SensorWarning.create(sensor, now);
-        var alert = SensorAlert.from(warning);
-
-        var alertState = new CurrentSensorState(sensor, SensorState.ALERT, warning, alert);
-        var lowerMeasurement = new SensorMeasurement(sensor, SensorThresholdConfiguration.THRESHOLD.value() - 100, now);
+    void shouldAcceptWhenAlertStateAndLowerMeasurement() {
+        var sensor = givenSensor();
+        var alertState = givenAlertState(sensor);
+        var lowerMeasurement = getLowerThresholdMeasurement(sensor);
 
         var accepted = this.rule.accept(alertState, lowerMeasurement);
         assertTrue(accepted);
     }
 
     @Test
+    void shouldNotAcceptWhenAlertStateAndHigherMeasurement() {
+        var sensor = givenSensor();
+        var alertState = givenAlertState(sensor);
+        var higherMeasurement = getHigherThresholdMeasurement(sensor);
+
+        var accepted = this.rule.accept(alertState, higherMeasurement);
+        assertFalse(accepted);
+    }
+
+    @Test
     void shouldIncrementLowerReads() {
-        var sensor = new Sensor("123");
-        var now = OffsetDateTime.now();
-        var warning = SensorWarning.create(sensor, now);
-        var alert = SensorAlert.from(warning);
+        var sensor = givenSensor();
+        var alertState = givenAlertState(sensor);
+        var lowerMeasurement = getLowerThresholdMeasurement(sensor);
 
-        var currentSensorLowerReadsCount = alert.getLowerReads().size();
-
-        var alertState = new CurrentSensorState(sensor, SensorState.ALERT, warning, alert);
-        var lowerMeasurement = new SensorMeasurement(sensor, SensorThresholdConfiguration.THRESHOLD.value() - 100, now);
+        var currentSensorLowerReadsCount = alertState.getAlert().get().getLowerReads().size();
 
         var newState = this.rule.defineState(alertState, lowerMeasurement);
-        var newAlertOpt = newState.getAlert();
+        assertThatLowerReadsWasIncremented(currentSensorLowerReadsCount, newState);
+    }
 
+    private void assertThatLowerReadsWasIncremented(int currentSensorLowerReadsCount, CurrentSensorState newState) {
+        var newAlertOpt = newState.getAlert();
         assertTrue(newAlertOpt.isPresent());
         assertEquals(SensorState.ALERT, newState.getState());
         assertEquals(currentSensorLowerReadsCount + 1, newAlertOpt.get().getLowerReads().size());
     }
+
 }

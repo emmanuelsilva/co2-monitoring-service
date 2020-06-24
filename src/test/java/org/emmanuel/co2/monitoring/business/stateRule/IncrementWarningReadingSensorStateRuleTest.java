@@ -1,11 +1,9 @@
 package org.emmanuel.co2.monitoring.business.stateRule;
 
-import org.emmanuel.co2.monitoring.domain.entity.*;
+import org.emmanuel.co2.monitoring.domain.entity.CurrentSensorState;
+import org.emmanuel.co2.monitoring.domain.entity.SensorState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.time.OffsetDateTime;
-import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,31 +16,20 @@ class IncrementWarningReadingSensorStateRuleTest extends BaseSensorStateRuleTest
         this.rule = new IncrementWarningReadingSensorStateRule();
     }
 
-    @Override
-    SensorState getState() {
-        return SensorState.WARN;
-    }
-
-    @Override
-    public IncrementWarningReadingSensorStateRule getRule() {
-        return rule;
-    }
-
     @Test
     void shouldAcceptWhenStateIsWarningAndNotReachMaxWarnAttempts() {
-        var sensor = new Sensor("123");
-        var warning = SensorWarning.create(sensor, OffsetDateTime.now());
-        var warnState = new CurrentSensorState(sensor, SensorState.WARN, warning);
-        var warningMeasurement = getHigherThresholdMeasurement(sensor);
+        var sensor = givenSensor();
+        var warnState = givenWarnState(sensor);
+        var higherMeasurement = getHigherThresholdMeasurement(sensor);
 
-        var accepted = rule.accept(warnState, warningMeasurement);
+        var accepted = rule.accept(warnState, higherMeasurement);
         assertTrue(accepted);
     }
 
     @Test
     void shouldNotAcceptWhenStateIsWarningButReachMaxWarnAttempts() {
-        var sensor = new Sensor("123");
-        var warnState = givenWarningWithReachMaxWarnAttempt(sensor);
+        var sensor = givenSensor();
+        var warnState = givenWarningSateWithMaxAttempts(sensor);
         var warningMeasurement = getHigherThresholdMeasurement(sensor);
 
         var accepted = rule.accept(warnState, warningMeasurement);
@@ -51,14 +38,11 @@ class IncrementWarningReadingSensorStateRuleTest extends BaseSensorStateRuleTest
 
     @Test
     void shouldIncrementWarningAttempts() {
-        var sensor = new Sensor("123");
-        var warning = SensorWarning.create(sensor, OffsetDateTime.now());
-        warning.addHigherRead(new SensorMeasurement(sensor,  5000, OffsetDateTime.now()));
+        var sensor = givenSensor();
+        var warnState = givenWarnState(sensor);
+        var higherMeasurement = getHigherThresholdMeasurement(sensor);
 
-        var warnState = new CurrentSensorState(sensor, SensorState.WARN, warning);
-        var warningMeasurement = getHigherThresholdMeasurement(sensor);
-
-        var result = rule.defineState(warnState, warningMeasurement);
+        var result = rule.defineState(warnState, higherMeasurement);
 
         assertThatWarningWasIncremented(result);
     }

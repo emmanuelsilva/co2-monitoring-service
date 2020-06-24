@@ -1,14 +1,13 @@
 package org.emmanuel.co2.monitoring.business.stateRule;
 
-import org.emmanuel.co2.monitoring.domain.entity.*;
+import org.emmanuel.co2.monitoring.domain.entity.CurrentSensorState;
+import org.emmanuel.co2.monitoring.domain.entity.SensorState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.OffsetDateTime;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-class SolvedWarningDetectorSensorStateRuleTest {
+class SolvedWarningDetectorSensorStateRuleTest  extends BaseSensorStateRuleTestCase {
 
     private SolvedWarningDetectorSensorStateRule rule;
 
@@ -19,48 +18,41 @@ class SolvedWarningDetectorSensorStateRuleTest {
 
     @Test
     void shouldAcceptWarningStateAndLowerMeasurement() {
-        var sensor = new Sensor("123");
-        var now = OffsetDateTime.now();
-        var warning = SensorWarning.create(sensor, now);
-        var warnState = new CurrentSensorState(sensor, SensorState.WARN, warning);
-        var measurement = new SensorMeasurement(sensor, SensorThresholdConfiguration.THRESHOLD.value() - 100, now);
+        var sensor = givenSensor();
+        var warnState = givenWarnState(sensor);
+        var lowerMeasurement = getLowerThresholdMeasurement(sensor);
 
-        var accepted = this.rule.accept(warnState, measurement);
+        var accepted = this.rule.accept(warnState, lowerMeasurement);
         assertTrue(accepted);
     }
 
     @Test
     void shouldNotAcceptWhenIsNotWarning() {
-        var sensor = new Sensor("123");
-        var now = OffsetDateTime.now();
-        var okState = new CurrentSensorState(sensor, SensorState.OK);
-        var measurement = new SensorMeasurement(sensor, SensorThresholdConfiguration.THRESHOLD.value() - 100, now);
+        var sensor = givenSensor();
+        var okState = givenOKState(givenSensor());
+        var lowerMeasurement = getLowerThresholdMeasurement(sensor);
 
-        var accepted = this.rule.accept(okState, measurement);
+        var accepted = this.rule.accept(okState, lowerMeasurement);
         assertFalse(accepted);
     }
 
     @Test
     void shouldNotAcceptWhenIsMeasurementIsHigherThanThreshold() {
-        var sensor = new Sensor("123");
-        var now = OffsetDateTime.now();
-        var warning = SensorWarning.create(sensor, now);
-        var warnState = new CurrentSensorState(sensor, SensorState.WARN, warning);
-        var measurement = new SensorMeasurement(sensor, SensorThresholdConfiguration.THRESHOLD.value() + 100, now);
+        var sensor = givenSensor();
+        var warnState = givenWarnState(sensor);
+        var lowerMeasurement = getHigherThresholdMeasurement(sensor);
 
-        var accepted = this.rule.accept(warnState, measurement);
+        var accepted = this.rule.accept(warnState, lowerMeasurement);
         assertFalse(accepted);
     }
 
     @Test
-    void shouldChangeStateToOKWhenCurrentStateIsWarnAndMeasurementIsLowerThanThreshold() {
-        var sensor = new Sensor("123");
-        var now = OffsetDateTime.now();
-        var warning = SensorWarning.create(sensor, now);
-        var warnState = new CurrentSensorState(sensor, SensorState.WARN, warning);
-        var measurement = new SensorMeasurement(sensor, SensorThresholdConfiguration.THRESHOLD.value() - 100, now);
+    void shouldChangeStateToOK() {
+        var sensor = givenSensor();
+        var warnState = givenWarnState(sensor);
+        var lowerMeasurement = getLowerThresholdMeasurement(sensor);
 
-        var newState = this.rule.defineState(warnState, measurement);
+        var newState = this.rule.defineState(warnState, lowerMeasurement);
 
         assertStateWasChangedToOK(newState);
     }
@@ -71,6 +63,8 @@ class SolvedWarningDetectorSensorStateRuleTest {
 
         var newWarningOpt = newState.getWarning();
         assertTrue(newWarningOpt.isPresent());
-        assertFalse(newWarningOpt.get().isOpened());
+
+        var warning = newWarningOpt.get();
+        assertFalse(warning.isOpened());
     }
 }

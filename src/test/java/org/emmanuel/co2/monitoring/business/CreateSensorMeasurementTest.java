@@ -53,7 +53,9 @@ class CreateSensorMeasurementTest {
         assertThrows(IllegalArgumentException.class, () -> this.createSensorMeasurement.create(sensor, request));
     }
 
-    private void assertThatMeasurementIsSameAsRequest(Sensor sensor, SensorMeasurementRequest request, SensorMeasurement measurement) {
+    private void assertThatMeasurementIsSameAsRequest(Sensor sensor,
+                                                      SensorMeasurementRequest request,
+                                                      SensorMeasurement measurement) {
         assertEquals(sensor, measurement.getSensor());
         assertEquals(request.getValue(), measurement.getValue());
         assertEquals(request.getTime(), measurement.getTimestamp());

@@ -1,7 +1,6 @@
 package org.emmanuel.co2.monitoring.business.stateRule;
 
 import org.emmanuel.co2.monitoring.domain.entity.CurrentSensorState;
-import org.emmanuel.co2.monitoring.domain.entity.Sensor;
 import org.emmanuel.co2.monitoring.domain.entity.SensorState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,25 +11,15 @@ class AlertDetectedSensorStateRuleTest extends BaseSensorStateRuleTestCase {
 
     private AlertDetectedSensorStateRule rule;
 
-    @Override
-    SensorStateRule getRule() {
-        return rule;
-    }
-
-    @Override
-    SensorState getState() {
-        return SensorState.ALERT;
-    }
-
     @BeforeEach
     void setUp() {
         this.rule = new AlertDetectedSensorStateRule();
     }
 
     @Test
-    void shouldAcceptWhenStateIsWarningAndReachMaxWarnAttempts() {
-        var sensor = new Sensor("123");
-        var warnState = givenWarningWithReachMaxWarnAttempt(sensor);
+    void shouldAcceptWhenCurrentStateReachMaxWarnAttempts() {
+        var sensor = givenSensor();
+        var warnState = givenWarningSateWithMaxAttempts(sensor);
         var warningMeasurement = getHigherThresholdMeasurement(sensor);
 
         var accepted = rule.accept(warnState, warningMeasurement);
@@ -38,17 +27,27 @@ class AlertDetectedSensorStateRuleTest extends BaseSensorStateRuleTestCase {
     }
 
     @Test
-    void shouldChangeWarnToAlertWhenReachMaxWarnAttempts() {
-        var sensor = new Sensor("123");
-        var warnState = givenWarningWithReachMaxWarnAttempt(sensor);
+    void shouldNotAcceptWhenMeasurementIsLowerThanThreshold() {
+        var sensor = givenSensor();
+        var okState = givenOKState(sensor);
+        var lowerThresholdMeasurement = getLowerThresholdMeasurement(sensor);
+
+        var accepted = rule.accept(okState, lowerThresholdMeasurement);
+        assertFalse(accepted);
+    }
+
+    @Test
+    void shouldGenerateAlertStateWhenReachMaxWarnAttempts() {
+        var sensor = givenSensor();
+        var warnState = givenWarningSateWithMaxAttempts(sensor);
         var warningMeasurement = getHigherThresholdMeasurement(sensor);
 
         var result = rule.defineState(warnState, warningMeasurement);
         assertThatAlertWasCreated(result);
-        assertThatWarnWasEnded(result);
+        assertThatWarnWasFinalized(result);
     }
 
-    private void assertThatWarnWasEnded(CurrentSensorState result) {
+    private void assertThatWarnWasFinalized(CurrentSensorState result) {
         var warningOpt = result.getWarning();
         assertTrue(warningOpt.isPresent());
         assertNotNull(warningOpt.get().getEndAt());
@@ -64,10 +63,14 @@ class AlertDetectedSensorStateRuleTest extends BaseSensorStateRuleTestCase {
         assertTrue(alertOpt.isPresent());
         assertTrue(warningOpt.isPresent());
 
-        var warningReads = warningOpt.get().getHigherReads().size();
+        var alert = alertOpt.get();
+        var warning = warningOpt.get();
+
+        var warningReads = warning.getHigherReads().size();
         var expectedReads = warningReads + 1; //all warning reads + 1 alert read
 
-        assertEquals(expectedReads, alertOpt.get().getHigherReads().size());
+        assertEquals(expectedReads, alert.getHigherReads().size());
+        assertNull(alert.getEndAt());
     }
 
 
