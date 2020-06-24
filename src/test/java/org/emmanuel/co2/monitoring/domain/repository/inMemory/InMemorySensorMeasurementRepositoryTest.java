@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.OffsetDateTime;
-import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,9 +26,7 @@ class InMemorySensorMeasurementRepositoryTest {
         var sensorMeasurement = new SensorMeasurement(sensor, 100, now);
 
         var saved = repository.save(sensorMeasurement);
-        assertNotNull(saved);
-        assertEquals(sensorMeasurement, saved);
-        assertTrue(repository.findAll().contains(saved));
+        assertMeasurementWasSaved(sensorMeasurement, saved);
     }
 
     @Test
@@ -46,7 +44,17 @@ class InMemorySensorMeasurementRepositoryTest {
         var measurements = repository
                 .findAllMeasurementBySensorIdAndTimestampAfter(sensor.getId(), beginOfMonth);
 
+        assertMeasurementWasFilteredByTime(nowMeasurement, measurements);
+    }
+
+    private void assertMeasurementWasFilteredByTime(SensorMeasurement nowMeasurement, List<SensorMeasurement> measurements) {
         assertEquals(1, measurements.size());
         assertTrue(measurements.contains(nowMeasurement));
+    }
+
+    private void assertMeasurementWasSaved(SensorMeasurement sensorMeasurement, SensorMeasurement saved) {
+        assertNotNull(saved);
+        assertEquals(sensorMeasurement, saved);
+        assertTrue(repository.findAll().contains(saved));
     }
 }

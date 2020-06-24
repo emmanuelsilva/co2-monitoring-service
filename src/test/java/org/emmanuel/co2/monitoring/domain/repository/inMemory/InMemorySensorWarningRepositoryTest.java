@@ -6,7 +6,6 @@ import org.emmanuel.co2.monitoring.domain.repository.ActiveBySensorFinder;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.time.OffsetDateTime;
-import java.util.Collections;
 
 class InMemorySensorWarningRepositoryTest extends ActiveBySensorFinderTestCase<SensorWarning> {
 
