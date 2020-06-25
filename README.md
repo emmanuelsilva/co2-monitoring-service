@@ -2,15 +2,98 @@
 
 # CO2 Monitoring API
 
-Restful API to collect data from sensors to monitoring CO2 and create alerts when concentrations reach critical levels.
+Restful API to collect data from sensors to monitoring CO2 concentrations and create alerts when it reaches critical levels.
+
+## Endpoints
+
+### Register CO2 concentration for a given sensor
+
+- POST at /api/v1/sensors/{sensorId}/mesurements
+
+Payload:
+
+```json
+{
+  "co2" : 150,
+  "time" : "2020-06-22T18:55:47+00:00"
+}
+```
+
+Response:
+
+- Http 200 with empty body for sucessfully operation.
+
+### Get sensor status
+
+- GET at /api/v1/sensors/{sensorId} 
+
+Response:
+
+- HTTP 200
+
+```json
+{
+  "status" : "OK"
+}
+```
+
+- HTTP 404 - If no sensor was found for the given `sensorId`.
+
+### Get sensor metrics for the last 30 days.
+
+- GET at /api/v1/sensors/{sensorId}/metrics
+
+Response:
+
+- HTTP 200
+
+```json
+{
+  "maxLast30Days" : 1200,
+  "avgLast30Days" : 900
+}
+```
+
+### Listing the alerts for a given sensor
+
+- GET at /api/v1/sensors/{uuid}/alerts
+
+Response:
+
+- HTTP 200
+
+```json
+[
+  {
+    "startTime" : "2019-02-02T18:55:47+00:00",
+    "endTime" : "2019-02-02T20:00:47+00:00",
+    "mesurement1" : 2100,
+    "mesurement2" : 2200,
+    "mesurement3" : 2100,
+  }
+]
+```
 
 # Architecture
 
-This project was created on top of Spring Boot framework. The following image illustrate the components and the protocolo communication between each layer. 
+This project was created using the Spring boot framework and following the most used conventions for a Spring boot project by separating the technical details into separated layers. The communication between layers is made using DTO and domain entities.
+
+The clean architecture based approach was used in this project to isolated business logic from the technology framework (framework agnostic).
+
+Layers:
+
+- **Controllers** - Provider HTTP Restful endpoints.
+- **Services** - Provider business logic orchestration. 
+- **Repository** - Provider the persistence layer.
+- **EventHandlers** - Handling asynchronous operations.
+
+The following diagram shows the communication between each layer.
 
 ![Diagram architecture](./architecture.png)
 
 ## Project organization
+
+To demonstrate the architecture project into the project organization, I tried to let the layers as clear as possible in the project structure, each package has an important representation in the organization:
 
 ```yaml
 │  README.md
@@ -38,57 +121,62 @@ This project was created on top of Spring Boot framework. The following image il
 
 This package contains all business rules. All business rules must be written in a pure function approach, that meaning no side effect is allowed in this layer. 
 
-The main reason to keep business rules as a pure function is to write easier unit testing for all business logic of the project.
+The main reason to keep business rules as a pure function is to write easier unit testing for all business logic of the project and keep them independent of the technical details.
 
 The service package is the only layer able to access this business package.
 
 #### service
 
-This layer is responsible to orchestrate the calling to all business rules to complete a specific use case of the application. 
+This layer is responsible to orchestrate the operation across all business rules required to complete a specific use case of the application. 
 
 Are responsible for this layer:
 
 - Manage transactions
 - Dependency Injection
 - Business rules orchestration
+- Publish Events
 
 #### controller
 
-This layer is responsible to up the HTTP Restful endpoints, convert the input and call the service layer.
+This layer is responsible to provide HTTP Restful endpoints and converting JSON inputs into object as well as the output into API specifications.
 
 #### entity
 
-The entities used to complete a specific business. All entities should be immutable to keep data consistent. All entities should be create or updated in the business layer.
+- Entities epresinting the state of a specific resource of the application. 
+- Entities should be immutable to keep data consistent. 
+- Entities must be create or updated in the business layer.
 
 #### repository
 
-The repository is an interface that should used to fetch or persist an entity on databases.
+The repository is an interface that should be used to fetch or persist an entity on databases. A simple database in-memory was implemented to avoid taking care of a complex persistent layer due to the focus was to solve the business problem.
 
 #### dto
 
-Data transfer objects are the protocol to communicates the controller and service layer.
+Data transfer objects are lightwave objects to communicate between the controller and the service layer.
 
 #### event
 
-All application events. An event must be an immutable object.
+Classes that represent a fact that occurs in the application. An event must be an immutable object.
 
 #### exception
 
-Custom application exception.
+Custom excpetion should be defined here.
 
 # Tests
 
 ### business
 
-As business rules are business functions, mocks are not allowed here, so just testing individual and focused tests for each isolated function.
+As business rules are pure functions, mocks are not allowed here, so just individual and focused tests are necessary for each test any business function.
 
 ### services
 
-To testing this layer, mock is allowed to simulate the integration with the external resources, such as repositories, event-bus, etc.
+Testing the integration between the service, and their dependencies with business rules.
+
+- Mocks are allowed to simulate the integration with dependencies resources, such respositories, event-bus, etc.
 
 ### controller
 
-TBD
+This is an integration test to guarantee the API works as defined in the contract.
 
 ## Pre requisites
 
