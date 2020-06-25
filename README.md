@@ -21,7 +21,7 @@ Payload:
 
 Response:
 
-- Http 200 with empty body for sucessfully operation.
+- HTTP status 200 with empty body for sucessfully operation.
 
 ### Get sensor status
 
@@ -37,7 +37,7 @@ Response:
 }
 ```
 
-- HTTP 404 - If no sensor was found for the given `sensorId`.
+- HTTP Status 404 - If no sensor was found for the given `sensorId`.
 
 ### Get sensor metrics for the last 30 days.
 
@@ -45,7 +45,7 @@ Response:
 
 Response:
 
-- HTTP 200
+- HTTP Status 200
 
 ```json
 {
@@ -60,7 +60,7 @@ Response:
 
 Response:
 
-- HTTP 200
+- HTTP Status 200
 
 ```json
 [
