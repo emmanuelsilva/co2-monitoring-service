@@ -117,7 +117,7 @@ To demonstrate the architecture project into the project organization, I tried t
 
 ## Packages responsability
 
-#### business
+#### - business
 
 This package contains all business rules. All business rules must be written in a pure function approach, that meaning no side effect is allowed in this layer. 
 
@@ -125,7 +125,7 @@ The main reason to keep business rules as a pure function is to write easier uni
 
 The service package is the only layer able to access this business package.
 
-#### service
+#### - service
 
 This layer is responsible to orchestrate the operation across all business rules required to complete a specific use case of the application. 
 
@@ -136,29 +136,29 @@ Are responsible for this layer:
 - Business rules orchestration
 - Publish Events
 
-#### controller
+#### - controller
 
 This layer is responsible to provide HTTP Restful endpoints and converting JSON inputs into object as well as the output into API specifications.
 
-#### entity
+#### - entity
 
 - Entities epresinting the state of a specific resource of the application. 
 - Entities should be immutable to keep data consistent. 
 - Entities must be create or updated in the business layer.
 
-#### repository
+#### - repository
 
 The repository is an interface that should be used to fetch or persist an entity on databases. A simple database in-memory was implemented to avoid taking care of a complex persistent layer due to the focus was to solve the business problem.
 
-#### dto
+#### - dto
 
 Data transfer objects are lightwave objects to communicate between the controller and the service layer.
 
-#### event
+#### - event
 
 Classes that represent a fact that occurs in the application. An event must be an immutable object.
 
-#### exception
+#### - exception
 
 Custom excpetion should be defined here.
 
