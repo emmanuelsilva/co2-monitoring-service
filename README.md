@@ -164,6 +164,8 @@ Custom excpetion should be defined here.
 
 # Tests
 
+Each commit will be tested using Github's actions.
+
 ### business
 
 As business rules are pure functions, mocks are not allowed here, so just individual and focused tests are necessary for each test any business function.
