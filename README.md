@@ -6,7 +6,9 @@ Restful API to collect data from sensors to monitoring CO2 and create alerts whe
 
 # Architecture
 
-TBD
+This project was created on top of Spring Boot framework. The following image illustrate the components and the protocolo communication between each layer. 
+
+![Diagram architecture](./architecture.png)
 
 ## Project organization
 
