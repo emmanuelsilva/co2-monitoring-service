@@ -1,5 +1,6 @@
 package org.emmanuel.co2.monitoring.controller;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
-import java.util.stream.Collectors;
+import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @RestController
@@ -71,7 +72,7 @@ public class SensorController {
             var higherReads = a.getHigherReads();
 
             return SensorAlertResponse.builder()
-                    .startTime(a.getStartAt())
+                    .startTime(a.getStartAt().withNano(0))
                     .endTime(a.getEndAt())
                     .measurement1(higherReads.get(0))
                     .measurement2(higherReads.get(1))
@@ -104,11 +105,23 @@ public class SensorController {
     @Data
     @Builder
     private static class SensorAlertResponse {
+
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "YYYY-MM-dd'T'hh:mm:ssX")
         private OffsetDateTime startTime;
+
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "YYYY-MM-dd'T'hh:mm:ssX")
         private OffsetDateTime endTime;
         private int measurement1;
         private int measurement2;
         private int measurement3;
     }
 
+    public static void main(String[] args) {
+
+        var my = DateTimeFormatter.ofPattern("YYYY-MM-dd'T'hh:mm:ssX");
+
+        System.out.println(OffsetDateTime.now());
+        System.out.println(OffsetDateTime.now().withNano(0).format(my));
+
+    }
 }

@@ -4,7 +4,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.emmanuel.co2.monitoring.event.SensorMeasuredEvent;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -44,8 +43,8 @@ public class SensorWarning implements HasSensor {
                 warning.getSensor(),
                 warning.getStartAt(),
                 warning.getEndAt(),
-                warning.getHigherReads(),
-                warning.getLowerReads());
+                new ArrayList<>(warning.getHigherReads()),
+                new ArrayList<>(warning.getLowerReads()));
     }
 
     public static SensorWarning create(Sensor sensor, OffsetDateTime startAt, OffsetDateTime endAt) {

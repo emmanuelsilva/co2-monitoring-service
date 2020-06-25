@@ -3,19 +3,14 @@ package org.emmanuel.co2.monitoring.service.handler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.emmanuel.co2.monitoring.business.ComputeCurrentSensorState;
-import org.emmanuel.co2.monitoring.business.stateRule.NoSensorStateRule;
-import org.emmanuel.co2.monitoring.business.stateRule.SensorStateRule;
+import org.emmanuel.co2.monitoring.business.changeState.ChangeSensorState;
 import org.emmanuel.co2.monitoring.domain.entity.CurrentSensorState;
 import org.emmanuel.co2.monitoring.domain.entity.Sensor;
-import org.emmanuel.co2.monitoring.domain.entity.SensorMeasurement;
 import org.emmanuel.co2.monitoring.domain.repository.SensorAlertRepository;
 import org.emmanuel.co2.monitoring.domain.repository.SensorWarningRepository;
 import org.emmanuel.co2.monitoring.event.SensorMeasuredEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -24,30 +19,22 @@ public class SensorMeasuredEventHandler {
 
     private final SensorWarningRepository sensorWarningRepository;
     private final SensorAlertRepository sensorAlertRepository;
-    private final List<SensorStateRule> sensorStateRules;
 
-    @Async
     @EventListener
     public void handleMeasuredEvent(SensorMeasuredEvent event) {
         var measurement = event.getMeasurement();
         var sensor = measurement.getSensor();
         CurrentSensorState currentState = getCurrentSensorState(sensor);
 
-        var sensorRule = getSensorRule(currentState, measurement);
-        var newState = sensorRule.defineState(currentState, measurement);
+        var changeSensorState = new ChangeSensorState();
+        var nextState = changeSensorState.change(currentState, measurement);
 
         log.info("current sensor state {}", currentState);
         log.info("processing new measured event {}", measurement);
-        log.info("new state {}", newState);
+        log.info("next state {}", nextState);
 
-        newState.getWarning().ifPresent(newWarning -> {
-            this.sensorWarningRepository.save(newWarning);
-        });
-
-        newState.getAlert().ifPresent(newAlert -> {
-            this.sensorAlertRepository.save(newAlert);
-        });
-
+        nextState.getWarning().ifPresent(sensorWarningRepository::save);
+        nextState.getAlert().ifPresent(sensorAlertRepository::save);
     }
 
     private CurrentSensorState getCurrentSensorState(Sensor sensor) {
@@ -56,16 +43,5 @@ public class SensorMeasuredEventHandler {
 
         ComputeCurrentSensorState sensorState = new ComputeCurrentSensorState();
         return sensorState.compute(sensor, warning, alert);
-    }
-
-    private SensorStateRule getSensorRule(CurrentSensorState currentSensorState, SensorMeasurement measurement) {
-        var sensorStateRule = sensorStateRules.stream()
-                .filter(rule -> rule.accept(currentSensorState, measurement))
-                .findFirst()
-                .orElse(new NoSensorStateRule());
-
-        log.info("{} has defined to process the measurement {}", sensorStateRule.getClass().getSimpleName(), measurement);
-
-        return sensorStateRule;
     }
 }

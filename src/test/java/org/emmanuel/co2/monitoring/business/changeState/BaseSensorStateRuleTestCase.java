@@ -1,4 +1,4 @@
-package org.emmanuel.co2.monitoring.business.stateRule;
+package org.emmanuel.co2.monitoring.business.changeState;
 
 import org.emmanuel.co2.monitoring.domain.entity.*;
 

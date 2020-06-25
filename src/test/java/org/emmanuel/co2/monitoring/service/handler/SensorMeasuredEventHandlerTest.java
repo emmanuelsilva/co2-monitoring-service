@@ -1,89 +1,88 @@
 package org.emmanuel.co2.monitoring.service.handler;
 
-import org.emmanuel.co2.monitoring.business.stateRule.SensorStateRule;
-import org.emmanuel.co2.monitoring.domain.entity.*;
+import org.emmanuel.co2.monitoring.domain.entity.Sensor;
+import org.emmanuel.co2.monitoring.domain.entity.SensorAlert;
+import org.emmanuel.co2.monitoring.domain.entity.SensorMeasurement;
+import org.emmanuel.co2.monitoring.domain.entity.SensorWarning;
 import org.emmanuel.co2.monitoring.domain.repository.SensorAlertRepository;
 import org.emmanuel.co2.monitoring.domain.repository.SensorWarningRepository;
 import org.emmanuel.co2.monitoring.event.SensorMeasuredEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.time.OffsetDateTime;
-import java.util.Arrays;
+import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 class SensorMeasuredEventHandlerTest {
 
     private SensorWarningRepository sensorWarningRepository;
     private SensorAlertRepository sensorAlertRepository;
-    private SensorStateRule sensorStateRule;
     private SensorMeasuredEventHandler eventHandler;
 
     @BeforeEach
     void setUp() {
         this.sensorWarningRepository = mock(SensorWarningRepository.class);
         this.sensorAlertRepository = mock(SensorAlertRepository.class);
-        this.sensorStateRule = mock(SensorStateRule.class);
         this.eventHandler = new SensorMeasuredEventHandler(
                 this.sensorWarningRepository,
-                this.sensorAlertRepository,
-                Arrays.asList(sensorStateRule));
+                this.sensorAlertRepository);
     }
 
     @Test
     void shouldSaveWarningStateWhenHasWarningChanges() {
         var sensor = new Sensor("123");
-        var currentState = new CurrentSensorState(sensor, SensorState.OK);
         var warningMeasurement = new SensorMeasurement(sensor, 3000, OffsetDateTime.now());
-        var warning = SensorWarning.create(sensor, OffsetDateTime.now());
 
-        givenWarnMeasuredState(sensor, currentState, warningMeasurement, warning);
+        givenNoWarningState(sensor);
         this.eventHandler.handleMeasuredEvent(new SensorMeasuredEvent(warningMeasurement));
 
-        assertThatWarningWasSavedOnDatabase(warning);
+        assertThatWarningWasSavedOnDatabase(sensor);
     }
 
     @Test
     void shouldSaveAlertStateWhenHasAlertChanges() {
         var sensor = new Sensor("123");
         var higherMeasurement = new SensorMeasurement(sensor, 3000, OffsetDateTime.now());
-        var warning = SensorWarning.create(sensor, OffsetDateTime.now());
-        var alert = SensorAlert.from(warning);
-        var currentState = new CurrentSensorState(sensor, SensorState.OK);
+        givenAlertOnDatabaseForSensor(sensor);
 
-        givenAlertMeasuredState(sensor, currentState, higherMeasurement, warning, alert);
         this.eventHandler.handleMeasuredEvent(new SensorMeasuredEvent(higherMeasurement));
 
-        assertThatAlertWasSavedOnDatabase(alert);
+        assertThatAlertWasSavedOnDatabase(sensor);
     }
 
-    private void assertThatWarningWasSavedOnDatabase(SensorWarning warning) {
-        verify(sensorWarningRepository).save(warning);
+    private void givenAlertOnDatabaseForSensor(Sensor sensor) {
+        var warning = SensorWarning.create(sensor, OffsetDateTime.now());
+        var alert = SensorAlert.from(warning);
+
+        when(this.sensorAlertRepository.findActiveBySensorId(sensor.getId())).thenReturn(Optional.of(alert));
     }
 
-    private void assertThatAlertWasSavedOnDatabase(SensorAlert alert) {
-        verify(sensorAlertRepository).save(alert);
+    private void givenNoWarningState(Sensor sensor) {
+        when(sensorWarningRepository.findActiveBySensorId(sensor.getId()))
+                .thenReturn(Optional.empty());
     }
 
-    private void givenWarnMeasuredState(Sensor sensor,
-                                        CurrentSensorState currentState,
-                                        SensorMeasurement warningMeasurement,
-                                        SensorWarning warning) {
+    private void assertThatWarningWasSavedOnDatabase(Sensor sensor) {
+        var saveWarningCaptor = ArgumentCaptor.forClass(SensorWarning.class);
+        verify(sensorWarningRepository).save(saveWarningCaptor.capture());
 
-        var warningState = new CurrentSensorState(sensor, SensorState.WARN, warning);
-        when(sensorStateRule.accept(currentState, warningMeasurement)).thenReturn(true);
-        when(sensorStateRule.defineState(currentState, warningMeasurement)).thenReturn(warningState);
+        var savedWarning = saveWarningCaptor.getValue();
+        assertEquals(sensor, savedWarning.getSensor());
+        assertNull(savedWarning.getEndAt());
     }
 
-    private void givenAlertMeasuredState(Sensor sensor,
-                                        CurrentSensorState currentState,
-                                        SensorMeasurement higherMeasurement,
-                                        SensorWarning warning,
-                                        SensorAlert alert) {
+    private void assertThatAlertWasSavedOnDatabase(Sensor sensor) {
+        var saveAlertCaptor = ArgumentCaptor.forClass(SensorAlert.class);
+        verify(sensorAlertRepository).save(saveAlertCaptor.capture());
 
-        var alertState = new CurrentSensorState(sensor, SensorState.ALERT, warning, alert);
-        when(sensorStateRule.accept(currentState, higherMeasurement)).thenReturn(true);
-        when(sensorStateRule.defineState(currentState, higherMeasurement)).thenReturn(alertState);
+        var savedAlert = saveAlertCaptor.getValue();
+        assertEquals(sensor, savedAlert.getSensor());
+        assertNull(savedAlert.getEndAt());
     }
+
 }
