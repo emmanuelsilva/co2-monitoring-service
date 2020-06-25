@@ -3,7 +3,11 @@ package org.emmanuel.co2.monitoring.business.changeState;
 import org.emmanuel.co2.monitoring.domain.entity.CurrentSensorState;
 import org.emmanuel.co2.monitoring.domain.entity.SensorMeasurement;
 
-public class NoChangeState implements ChangeState {
+/**
+ * Used to represent a null object, when no ChangeState was detected.
+ * This implementation will return the current sensor state.
+ **/
+class NoChangeState implements ChangeState {
 
     @Override
     public ChangeStateDetectorRule rule() {

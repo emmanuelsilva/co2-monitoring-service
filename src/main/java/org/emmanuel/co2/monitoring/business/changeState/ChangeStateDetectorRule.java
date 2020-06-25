@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiPredicate;
 
+/**
+ * Builder approach to writing sensor condition rules to easily write conditions.
+ */
 public class ChangeStateDetectorRule {
 
     private List<BiPredicate<CurrentSensorState, SensorMeasurement>> conditions;
