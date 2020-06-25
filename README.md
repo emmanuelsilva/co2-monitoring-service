@@ -178,6 +178,8 @@ Testing the integration between the service, and their dependencies with busines
 
 This is an integration test to guarantee the API works as defined in the contract.
 
+# Install & running
+
 ## Pre requisites
 
 Make sure you have all the following requisites before run:
@@ -201,3 +203,7 @@ Make sure you have all the following requisites before run:
 ```sh
 ./gradlew bootRun
 ```
+
+## Docker
+
+TBD
