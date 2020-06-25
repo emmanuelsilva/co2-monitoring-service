@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @RestController
@@ -114,14 +113,5 @@ public class SensorController {
         private int measurement1;
         private int measurement2;
         private int measurement3;
-    }
-
-    public static void main(String[] args) {
-
-        var my = DateTimeFormatter.ofPattern("YYYY-MM-dd'T'hh:mm:ssX");
-
-        System.out.println(OffsetDateTime.now());
-        System.out.println(OffsetDateTime.now().withNano(0).format(my));
-
     }
 }
