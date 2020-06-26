@@ -110,6 +110,7 @@ To demonstrate the architecture project into the project organization, I tried t
 |  └─ event
 |  └─ exception
 |  └─ service 
+|  └─ configuration 
 └─ tests
    └─ business
    └─ service
@@ -168,6 +169,10 @@ Classes that represent a fact that occurs in the application. An event must be a
 #### - exception
 
 Custom excpetion should be defined here.
+
+#### - configuration
+
+Spring boot configuration classes should be defined here.
 
 # Tests
 
