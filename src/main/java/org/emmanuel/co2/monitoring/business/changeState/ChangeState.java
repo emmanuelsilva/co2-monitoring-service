@@ -1,6 +1,6 @@
 package org.emmanuel.co2.monitoring.business.changeState;
 
-import org.emmanuel.co2.monitoring.domain.entity.CurrentSensorState;
+import org.emmanuel.co2.monitoring.domain.vo.CurrentSensorState;
 import org.emmanuel.co2.monitoring.domain.entity.SensorMeasurement;
 
 /**

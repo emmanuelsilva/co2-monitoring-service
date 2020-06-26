@@ -3,9 +3,9 @@ package org.emmanuel.co2.monitoring.business.changeState.alert;
 import org.emmanuel.co2.monitoring.business.changeState.ChangeState;
 import org.emmanuel.co2.monitoring.business.changeState.ChangeStateDetectorRule;
 import org.emmanuel.co2.monitoring.business.changeState.SensorThresholdConfiguration;
-import org.emmanuel.co2.monitoring.domain.entity.CurrentSensorState;
 import org.emmanuel.co2.monitoring.domain.entity.SensorMeasurement;
 import org.emmanuel.co2.monitoring.domain.entity.SensorState;
+import org.emmanuel.co2.monitoring.domain.vo.CurrentSensorState;
 
 public class IncrementAlertLowerReadingChangeState implements ChangeState {
 
@@ -27,6 +27,10 @@ public class IncrementAlertLowerReadingChangeState implements ChangeState {
         var incrementedLowerReadAlert = currentState.getAlert().orElseThrow(IllegalStateException::new);
         incrementedLowerReadAlert.addLowerRead(measurement);
 
-        return new CurrentSensorState(sensor, SensorState.ALERT, incrementedLowerReadAlert);
+        return CurrentSensorState.builder()
+                .sensor(sensor)
+                .state(SensorState.ALERT)
+                .alert(incrementedLowerReadAlert)
+                .build();
     }
 }

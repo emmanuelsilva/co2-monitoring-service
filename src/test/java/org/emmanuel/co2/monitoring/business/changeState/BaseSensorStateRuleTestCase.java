@@ -1,13 +1,13 @@
 package org.emmanuel.co2.monitoring.business.changeState;
 
 import org.emmanuel.co2.monitoring.domain.entity.*;
+import org.emmanuel.co2.monitoring.domain.vo.CurrentSensorState;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public abstract class BaseSensorStateRuleTestCase {
 
@@ -17,7 +17,11 @@ public abstract class BaseSensorStateRuleTestCase {
     }
 
     protected CurrentSensorState givenOKState(Sensor sensor) {
-        return new CurrentSensorState(sensor, SensorState.OK);
+        return CurrentSensorState
+                .builder()
+                .sensor(sensor)
+                .state(SensorState.OK)
+                .build();
     }
 
     protected OffsetDateTime now() {
@@ -26,7 +30,12 @@ public abstract class BaseSensorStateRuleTestCase {
 
     protected CurrentSensorState givenWarningSateWithMaxAttempts(Sensor sensor) {
         SensorWarning warning = buildSensorWarningWithMaxAttempts(sensor);
-        return new CurrentSensorState(sensor, SensorState.WARN, warning);
+        return CurrentSensorState
+                .builder()
+                .sensor(sensor)
+                .state(SensorState.WARN)
+                .warning(warning)
+                .build();
     }
 
     private SensorWarning buildSensorWarningWithMaxAttempts(Sensor sensor) {
@@ -42,14 +51,25 @@ public abstract class BaseSensorStateRuleTestCase {
         var warning = SensorWarning.create(sensor, OffsetDateTime.now());
         warning.addHigherRead(getHigherThresholdMeasurement(sensor));
 
-        return new CurrentSensorState(sensor, SensorState.WARN, warning);
+        return CurrentSensorState
+                .builder()
+                .sensor(sensor)
+                .state(SensorState.WARN)
+                .warning(warning)
+                .build();
     }
 
     protected CurrentSensorState givenAlertState(Sensor sensor) {
         var warning = buildSensorWarningWithMaxAttempts(sensor);
         var alert = SensorAlert.from(warning);
 
-        return new CurrentSensorState(sensor, SensorState.ALERT, warning, alert);
+        return CurrentSensorState
+                .builder()
+                .sensor(sensor)
+                .state(SensorState.ALERT)
+                .warning(warning)
+                .alert(alert)
+                .build();
     }
 
     protected CurrentSensorState givenAlertStateWithMaxLowerAttempts(Sensor sensor) {
@@ -58,7 +78,12 @@ public abstract class BaseSensorStateRuleTestCase {
         IntStream.range(1, SensorThresholdConfiguration.MAX_ATTEMPTS.value())
                 .forEach(i -> alert.addLowerRead(getLowerThresholdMeasurement(sensor)));
 
-       return new CurrentSensorState(sensor, SensorState.ALERT, alert);
+        return CurrentSensorState
+                .builder()
+                .sensor(sensor)
+                .state(SensorState.ALERT)
+                .alert(alert)
+                .build();
     }
 
     protected SensorMeasurement getHigherThresholdMeasurement(Sensor sensor) {

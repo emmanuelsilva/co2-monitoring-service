@@ -1,9 +1,9 @@
 package org.emmanuel.co2.monitoring.business.changeState;
 
 import lombok.RequiredArgsConstructor;
-import org.emmanuel.co2.monitoring.domain.entity.CurrentSensorState;
 import org.emmanuel.co2.monitoring.domain.entity.SensorMeasurement;
 import org.emmanuel.co2.monitoring.domain.entity.SensorState;
+import org.emmanuel.co2.monitoring.domain.vo.CurrentSensorState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ public class ChangeStateDetectorRule {
 
     public static class Builder {
 
-        private List<BiPredicate<CurrentSensorState, SensorMeasurement>> conditions;
+        private final List<BiPredicate<CurrentSensorState, SensorMeasurement>> conditions;
 
         public Builder() {
             this.conditions = new ArrayList<>();

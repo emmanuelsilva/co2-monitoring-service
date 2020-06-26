@@ -3,10 +3,10 @@ package org.emmanuel.co2.monitoring.business.changeState.alert;
 import org.emmanuel.co2.monitoring.business.changeState.ChangeState;
 import org.emmanuel.co2.monitoring.business.changeState.ChangeStateDetectorRule;
 import org.emmanuel.co2.monitoring.business.changeState.SensorThresholdConfiguration;
-import org.emmanuel.co2.monitoring.domain.entity.CurrentSensorState;
 import org.emmanuel.co2.monitoring.domain.entity.SensorAlert;
 import org.emmanuel.co2.monitoring.domain.entity.SensorMeasurement;
 import org.emmanuel.co2.monitoring.domain.entity.SensorState;
+import org.emmanuel.co2.monitoring.domain.vo.CurrentSensorState;
 
 public class SolveAlertChangeState implements ChangeState {
 
@@ -27,6 +27,11 @@ public class SolveAlertChangeState implements ChangeState {
         var alert = currentState.getAlert().orElseThrow(IllegalStateException::new);
         var resolvedAlert = SensorAlert.end(alert, measurement.getTimestamp());
 
-        return new CurrentSensorState(sensor, SensorState.OK, resolvedAlert);
+        return CurrentSensorState.builder()
+                .sensor(sensor)
+                .state(SensorState.OK)
+                .alert(resolvedAlert)
+                .build();
+
     }
 }

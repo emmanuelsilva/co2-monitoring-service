@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.emmanuel.co2.monitoring.business.ComputeCurrentSensorState;
 import org.emmanuel.co2.monitoring.business.changeState.ChangeSensorState;
-import org.emmanuel.co2.monitoring.domain.entity.CurrentSensorState;
+import org.emmanuel.co2.monitoring.domain.vo.CurrentSensorState;
 import org.emmanuel.co2.monitoring.domain.entity.Sensor;
 import org.emmanuel.co2.monitoring.domain.repository.SensorAlertRepository;
 import org.emmanuel.co2.monitoring.domain.repository.SensorWarningRepository;

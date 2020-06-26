@@ -3,10 +3,10 @@ package org.emmanuel.co2.monitoring.business.changeState.warning;
 import org.emmanuel.co2.monitoring.business.changeState.ChangeState;
 import org.emmanuel.co2.monitoring.business.changeState.ChangeStateDetectorRule;
 import org.emmanuel.co2.monitoring.business.changeState.SensorThresholdConfiguration;
-import org.emmanuel.co2.monitoring.domain.entity.CurrentSensorState;
 import org.emmanuel.co2.monitoring.domain.entity.SensorMeasurement;
 import org.emmanuel.co2.monitoring.domain.entity.SensorState;
 import org.emmanuel.co2.monitoring.domain.entity.SensorWarning;
+import org.emmanuel.co2.monitoring.domain.vo.CurrentSensorState;
 
 public class IncrementWarningAttemptChangeState implements ChangeState {
 
@@ -29,6 +29,11 @@ public class IncrementWarningAttemptChangeState implements ChangeState {
         var incrementedWarning = SensorWarning.copy(warning);
         incrementedWarning.addHigherRead(measurement);
 
-        return new CurrentSensorState(sensor, SensorState.WARN, incrementedWarning);
+        return CurrentSensorState.builder()
+                .sensor(sensor)
+                .state(SensorState.WARN)
+                .warning(incrementedWarning)
+                .build();
+
     }
 }

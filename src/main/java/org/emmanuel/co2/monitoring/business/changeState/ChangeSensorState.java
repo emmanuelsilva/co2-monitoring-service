@@ -6,7 +6,7 @@ import org.emmanuel.co2.monitoring.business.changeState.alert.SolveAlertChangeSt
 import org.emmanuel.co2.monitoring.business.changeState.warning.IncrementWarningAttemptChangeState;
 import org.emmanuel.co2.monitoring.business.changeState.warning.SolveWarningChangeState;
 import org.emmanuel.co2.monitoring.business.changeState.warning.WarnChangeState;
-import org.emmanuel.co2.monitoring.domain.entity.CurrentSensorState;
+import org.emmanuel.co2.monitoring.domain.vo.CurrentSensorState;
 import org.emmanuel.co2.monitoring.domain.entity.SensorMeasurement;
 
 import java.util.ArrayList;
