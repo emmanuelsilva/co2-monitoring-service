@@ -76,7 +76,7 @@ Response:
 
 # Architecture
 
-This project was created using the Spring boot framework and following the most used conventions for a Spring boot project by separating the technical details into separated layers. The communication between layers is made using DTO and domain entities.
+This project was created using the Spring boot framework and following the most used conventions for a Spring boot project by separating the technical details into separated layers (layered architecture). The communication between layers is made using DTO and domain entities.
 
 The clean architecture based approach was used in this project to isolated business logic from the technology framework (framework agnostic).
 
