@@ -14,11 +14,11 @@ public class SolveAlertChangeState implements ChangeState {
 
     @Override
     public ChangeStateDetectorRule rule() {
-        return ChangeStateDetectorRule
-                .start()
+        return new ChangeStateDetectorRule.Builder()
                 .whenStateIs(SensorState.ALERT)
                 .measurementIsBelow(ALERT_THRESHOLD)
-                .withAlertLowerAttempts(2);
+                .withAlertLowerAttempts(2)
+                .build();
     }
 
     @Override

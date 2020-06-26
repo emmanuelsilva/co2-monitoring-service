@@ -1,14 +1,7 @@
 package org.emmanuel.co2.monitoring.business.changeState;
 
-import org.emmanuel.co2.monitoring.domain.entity.CurrentSensorState;
-import org.emmanuel.co2.monitoring.domain.entity.SensorMeasurement;
-import org.emmanuel.co2.monitoring.domain.entity.SensorState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ChangeSensorStateTest extends BaseSensorStateRuleTestCase {
 
@@ -78,62 +71,5 @@ class ChangeSensorStateTest extends BaseSensorStateRuleTestCase {
 
         var newState = this.changeSensorState.change(alertState, lowerThresholdMeasurement);
         assertThatSensorStatusWasChangedFromAlertToOK(newState);
-    }
-
-    private void assertThatSensorStatusWasChangedToWarn(CurrentSensorState newState) {
-        assertNotNull(newState);
-        assertEquals(SensorState.WARN, newState.getState());
-        assertTrue(newState.getWarning().isPresent());
-        assertEquals(1, newState.getWarning().get().getHigherReads().size());
-    }
-
-    private void assertThatSensorStatusWasChangedFromWarnToOK(CurrentSensorState newState) {
-        assertNotNull(newState);
-        assertTrue(newState.getWarning().isPresent());
-
-        var warning = newState.getWarning().get();
-        assertNotNull(warning.getEndAt());
-    }
-
-    private void assertThatWarningCounterWasIncremented(CurrentSensorState newState, int expectedIncrementedHighReads) {
-        assertNotNull(newState);
-        assertEquals(SensorState.WARN, newState.getState());
-        assertTrue(newState.getWarning().isPresent());
-        assertEquals(expectedIncrementedHighReads, newState.getWarning().get().getHigherReads().size());
-    }
-
-    private void assertThatSensorStatusWasChangedToAlert(SensorMeasurement higherThresholdMeasurement, CurrentSensorState newState) {
-        assertNotNull(newState);
-        assertEquals(SensorState.ALERT, newState.getState());
-
-        assertTrue(newState.getWarning().isPresent());
-        assertNotNull(newState.getWarning().get().getEndAt());
-        assertTrue(newState.getAlert().isPresent());
-        assertNull(newState.getAlert().get().getEndAt());
-
-        var warning = newState.getWarning().get();
-        var alert = newState.getAlert().get();
-
-        var expectedReads = new ArrayList<>(warning.getHigherReads());
-        expectedReads.add(higherThresholdMeasurement.getValue());
-
-        assertEquals(expectedReads, alert.getHigherReads());
-    }
-
-    private void assertThatAlertLowerCounterWasIncremented(CurrentSensorState newState) {
-        assertNotNull(newState);
-        assertTrue(newState.getAlert().isPresent());
-
-        var alert = newState.getAlert().get();
-        assertEquals(1, alert.getLowerReads().size());
-        assertNull(alert.getEndAt());
-    }
-
-    private void assertThatSensorStatusWasChangedFromAlertToOK(CurrentSensorState newState) {
-        assertNotNull(newState);
-        assertTrue(newState.getAlert().isPresent());
-
-        var alert = newState.getAlert().get();
-        assertNotNull(alert.getEndAt());
     }
 }

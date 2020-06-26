@@ -13,11 +13,11 @@ public class IncrementAlertLowerReadingChangeState implements ChangeState {
 
     @Override
     public ChangeStateDetectorRule rule() {
-        return ChangeStateDetectorRule
-                .start()
+        return new ChangeStateDetectorRule.Builder()
                 .whenStateIs(SensorState.ALERT)
                 .measurementIsBelow(ALERT_THRESHOLD)
-                .withAlertLowerAttempts(1);
+                .withAlertLowerAttempts(1)
+                .build();
     }
 
     @Override

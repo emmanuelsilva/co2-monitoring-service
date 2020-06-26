@@ -3,7 +3,11 @@ package org.emmanuel.co2.monitoring.business.changeState;
 import org.emmanuel.co2.monitoring.domain.entity.*;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.stream.IntStream;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public abstract class BaseSensorStateRuleTestCase {
 
@@ -69,5 +73,62 @@ public abstract class BaseSensorStateRuleTestCase {
                 sensor,
                 SensorThresholdConfiguration.THRESHOLD.value() - 100,
                 OffsetDateTime.now());
+    }
+
+    protected void assertThatSensorStatusWasChangedToWarn(CurrentSensorState newState) {
+        assertNotNull(newState);
+        assertEquals(SensorState.WARN, newState.getState());
+        assertTrue(newState.getWarning().isPresent());
+        assertEquals(1, newState.getWarning().get().getHigherReads().size());
+    }
+
+    protected void assertThatWarningCounterWasIncremented(CurrentSensorState newState, int expectedIncrementedHighReads) {
+        assertNotNull(newState);
+        assertEquals(SensorState.WARN, newState.getState());
+        assertTrue(newState.getWarning().isPresent());
+        assertEquals(expectedIncrementedHighReads, newState.getWarning().get().getHigherReads().size());
+    }
+
+    protected void assertThatSensorStatusWasChangedFromWarnToOK(CurrentSensorState newState) {
+        assertNotNull(newState);
+        assertTrue(newState.getWarning().isPresent());
+
+        var warning = newState.getWarning().get();
+        assertNotNull(warning.getEndAt());
+    }
+
+    protected void assertThatSensorStatusWasChangedToAlert(SensorMeasurement higherThresholdMeasurement, CurrentSensorState newState) {
+        assertNotNull(newState);
+        assertEquals(SensorState.ALERT, newState.getState());
+
+        assertTrue(newState.getWarning().isPresent());
+        assertNotNull(newState.getWarning().get().getEndAt());
+        assertTrue(newState.getAlert().isPresent());
+        assertNull(newState.getAlert().get().getEndAt());
+
+        var warning = newState.getWarning().get();
+        var alert = newState.getAlert().get();
+
+        var expectedReads = new ArrayList<>(warning.getHigherReads());
+        expectedReads.add(higherThresholdMeasurement.getValue());
+
+        assertEquals(expectedReads, alert.getHigherReads());
+    }
+
+    protected void assertThatAlertLowerCounterWasIncremented(CurrentSensorState newState) {
+        assertNotNull(newState);
+        assertTrue(newState.getAlert().isPresent());
+
+        var alert = newState.getAlert().get();
+        assertEquals(1, alert.getLowerReads().size());
+        assertNull(alert.getEndAt());
+    }
+
+    protected void assertThatSensorStatusWasChangedFromAlertToOK(CurrentSensorState newState) {
+        assertNotNull(newState);
+        assertTrue(newState.getAlert().isPresent());
+
+        var alert = newState.getAlert().get();
+        assertNotNull(alert.getEndAt());
     }
 }

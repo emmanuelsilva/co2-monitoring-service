@@ -14,12 +14,10 @@ public class WarnChangeState implements ChangeState {
 
     @Override
     public ChangeStateDetectorRule rule() {
-        ChangeStateDetectorRule rule = ChangeStateDetectorRule
-                .start()
+        return new ChangeStateDetectorRule.Builder()
                 .whenStateIs(SensorState.OK)
-                .measurementIsAbove(WARN_THRESHOLD);
-
-        return rule;
+                .measurementIsAbove(WARN_THRESHOLD)
+                .build();
     }
 
     @Override

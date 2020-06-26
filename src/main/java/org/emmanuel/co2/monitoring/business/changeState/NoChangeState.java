@@ -11,7 +11,7 @@ class NoChangeState implements ChangeState {
 
     @Override
     public ChangeStateDetectorRule rule() {
-        return ChangeStateDetectorRule.start();
+        return new ChangeStateDetectorRule.Builder().build();
     }
 
     @Override

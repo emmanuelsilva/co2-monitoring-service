@@ -14,8 +14,9 @@ class ChangeStateDetectorRuleTest extends BaseSensorStateRuleTestCase {
         var okState = givenOKState(sensor);
         var higherMeasurement = getHigherThresholdMeasurement(sensor);
 
-        var rule = ChangeStateDetectorRule.start()
-                .whenStateIs(SensorState.OK);
+        var rule = new ChangeStateDetectorRule.Builder()
+                .whenStateIs(SensorState.OK)
+                .build();
 
         assertTrue(rule.match(okState, higherMeasurement));
     }
@@ -26,8 +27,9 @@ class ChangeStateDetectorRuleTest extends BaseSensorStateRuleTestCase {
         var okState = givenOKState(sensor);
         var higherMeasurement = getHigherThresholdMeasurement(sensor);
 
-        var rule = ChangeStateDetectorRule.start()
-                .whenStateIs(SensorState.WARN);
+        var rule = new ChangeStateDetectorRule.Builder()
+                .whenStateIs(SensorState.WARN)
+                .build();
 
         assertFalse(rule.match(okState, higherMeasurement));
     }
@@ -38,8 +40,9 @@ class ChangeStateDetectorRuleTest extends BaseSensorStateRuleTestCase {
         var okState = givenOKState(sensor);
         var higherMeasurement = getHigherThresholdMeasurement(sensor);
 
-        var rule = ChangeStateDetectorRule.start()
-                .measurementIsAbove(SensorThresholdConfiguration.THRESHOLD.value());
+        var rule = new ChangeStateDetectorRule.Builder()
+                .measurementIsAbove(SensorThresholdConfiguration.THRESHOLD.value())
+                .build();
 
         assertTrue(rule.match(okState, higherMeasurement));
     }
@@ -50,8 +53,9 @@ class ChangeStateDetectorRuleTest extends BaseSensorStateRuleTestCase {
         var okState = givenOKState(sensor);
         var lowerThresholdMeasurement = getLowerThresholdMeasurement(sensor);
 
-        var rule = ChangeStateDetectorRule.start()
-                .measurementIsBelow(SensorThresholdConfiguration.THRESHOLD.value());
+        var rule = new ChangeStateDetectorRule.Builder()
+                .measurementIsBelow(SensorThresholdConfiguration.THRESHOLD.value())
+                .build();
 
         assertTrue(rule.match(okState, lowerThresholdMeasurement));
     }
@@ -62,8 +66,9 @@ class ChangeStateDetectorRuleTest extends BaseSensorStateRuleTestCase {
         var warnState = givenWarningSateWithMaxAttempts(sensor);
         var higherMeasurement = getHigherThresholdMeasurement(sensor);
 
-        var rule = ChangeStateDetectorRule.start()
-                .withWarningAttempts(2);
+        var rule = new ChangeStateDetectorRule.Builder()
+                .withWarningAttempts(2)
+                .build();
 
         assertTrue(rule.match(warnState, higherMeasurement));
     }
@@ -74,8 +79,9 @@ class ChangeStateDetectorRuleTest extends BaseSensorStateRuleTestCase {
         var warnState = givenAlertStateWithMaxLowerAttempts(sensor);
         var lowerMeasurement = getLowerThresholdMeasurement(sensor);
 
-        var rule = ChangeStateDetectorRule.start()
-                .withAlertLowerAttempts(2);
+        var rule = new ChangeStateDetectorRule.Builder()
+                .withAlertLowerAttempts(2)
+                .build();
 
         assertTrue(rule.match(warnState, lowerMeasurement));
     }

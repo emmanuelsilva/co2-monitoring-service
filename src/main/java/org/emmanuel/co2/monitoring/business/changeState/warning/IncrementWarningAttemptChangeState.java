@@ -14,13 +14,11 @@ public class IncrementWarningAttemptChangeState implements ChangeState {
 
     @Override
     public ChangeStateDetectorRule rule() {
-        ChangeStateDetectorRule rule = ChangeStateDetectorRule
-                .start()
+        return new ChangeStateDetectorRule.Builder()
                 .whenStateIs(SensorState.WARN)
                 .measurementIsAbove(WARN_THRESHOLD)
-                .withWarningAttempts(1);
-
-        return rule;
+                .withWarningAttempts(1)
+                .build();
     }
 
     @Override
