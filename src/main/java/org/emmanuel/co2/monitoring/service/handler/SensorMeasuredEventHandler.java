@@ -4,12 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.emmanuel.co2.monitoring.business.ComputeCurrentSensorState;
 import org.emmanuel.co2.monitoring.business.changeState.ChangeSensorState;
-import org.emmanuel.co2.monitoring.domain.vo.CurrentSensorState;
 import org.emmanuel.co2.monitoring.domain.entity.Sensor;
 import org.emmanuel.co2.monitoring.domain.repository.SensorAlertRepository;
 import org.emmanuel.co2.monitoring.domain.repository.SensorWarningRepository;
+import org.emmanuel.co2.monitoring.domain.vo.CurrentSensorState;
 import org.emmanuel.co2.monitoring.event.SensorMeasuredEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -20,6 +21,7 @@ public class SensorMeasuredEventHandler {
     private final SensorWarningRepository sensorWarningRepository;
     private final SensorAlertRepository sensorAlertRepository;
 
+    @Async
     @EventListener
     public void handleMeasuredEvent(SensorMeasuredEvent event) {
         var measurement = event.getMeasurement();

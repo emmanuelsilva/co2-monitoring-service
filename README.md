@@ -105,6 +105,7 @@ To demonstrate the architecture project into the project organization, I tried t
 |  └─ domain
 |  |  └─ entity
 |  |  └─ repository
+|  |  └─ vo
 |  └─ dto
 |  └─ event
 |  └─ exception
@@ -149,6 +150,12 @@ This layer is responsible to provide HTTP Restful endpoints and converting JSON 
 #### - repository
 
 The repository is an interface that should be used to fetch or persist an entity on databases. A simple database in-memory was implemented to avoid taking care of a complex persistent layer due to the focus was to solve the business problem.
+
+#### - vo 
+
+This package contains the Value Object of the application. A Value Object is an immutable type that is distinguishable only by the state of its properties.
+
+- [VO Reference](https://deviq.com/value-object/)
 
 #### - dto
 

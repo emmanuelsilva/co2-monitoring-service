@@ -33,6 +33,9 @@ dependencies {
 }
 
 test {
+	doFirst {
+		systemProperty 'spring.profiles.active', 'test'
+	}
 	useJUnitPlatform()
 }
 
