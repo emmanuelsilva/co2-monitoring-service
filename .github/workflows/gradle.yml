@@ -23,7 +23,7 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Test
-      run: ./gradlew test
+      run: ./gradlew test jacocoTestReport
       
     - name: 'Publish Test Report'
       if: always()
