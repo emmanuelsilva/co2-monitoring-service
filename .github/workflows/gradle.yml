@@ -35,3 +35,5 @@ jobs:
     - name: 'Publish code coverage'
       if: always()
       uses: codecov/codecov-action@v1
+      with:
+        file: ./build/reports/jacoco/test/jacocoTestReport.xml
