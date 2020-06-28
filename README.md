@@ -1,4 +1,4 @@
-![CO2 Monitoring API pipepline](https://github.com/emmanuelsilva/co2-monitoring-service/workflows/CO2%20Monitoring%20API%20pipepline/badge.svg)
+[![CO2 Monitoring API pipepline](https://github.com/emmanuelsilva/co2-monitoring-service/workflows/CO2%20Monitoring%20API%20pipepline/badge.svg)](https://github.com/emmanuelsilva/co2-monitoring-service/actions)
 
 [![codecov](https://codecov.io/gh/emmanuelsilva/co2-monitoring-service/branch/master/graph/badge.svg)](https://codecov.io/gh/emmanuelsilva/co2-monitoring-service)
 
