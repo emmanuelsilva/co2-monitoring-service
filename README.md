@@ -10,7 +10,7 @@ Restful API to collect data from sensors to monitoring CO2 concentrations and cr
 
 ### Register CO2 concentration for a given sensor
 
-- POST at /api/v1/sensors/{sensorId}/mesurements
+POST at /api/v1/sensors/{sensorId}/mesurements
 
 Payload:
 
@@ -27,7 +27,7 @@ Response:
 
 ### Get sensor status
 
-- GET at /api/v1/sensors/{sensorId} 
+GET at /api/v1/sensors/{sensorId} 
 
 Response:
 
@@ -35,7 +35,7 @@ Response:
 
 ```json
 {
-  "status" : "OK"
+  "status" : "OK|WARN|ALERT"
 }
 ```
 
@@ -43,7 +43,7 @@ Response:
 
 ### Get sensor metrics for the last 30 days.
 
-- GET at /api/v1/sensors/{sensorId}/metrics
+GET at /api/v1/sensors/{sensorId}/metrics
 
 Response:
 
@@ -58,7 +58,7 @@ Response:
 
 ### Listing the alerts for a given sensor
 
-- GET at /api/v1/sensors/{uuid}/alerts
+GET at /api/v1/sensors/{uuid}/alerts
 
 Response:
 
