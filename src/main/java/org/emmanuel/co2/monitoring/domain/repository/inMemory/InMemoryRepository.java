@@ -1,6 +1,7 @@
 package org.emmanuel.co2.monitoring.domain.repository.inMemory;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -13,7 +14,7 @@ public abstract class InMemoryRepository<T> {
     private Set<T> records;
 
     protected InMemoryRepository() {
-        this.records = Collections.synchronizedSet(new HashSet<>());
+        this.records = new CopyOnWriteArraySet<>();
     }
 
     public T save(T record) {
