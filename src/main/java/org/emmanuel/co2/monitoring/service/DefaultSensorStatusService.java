@@ -31,7 +31,7 @@ public class DefaultSensorStatusService implements SensorStatusService {
                 .findActiveBySensorId(sensorId)
                 .orElse(null);
 
-        ComputeCurrentSensorState computeCurrentSensorState = new ComputeCurrentSensorState();
+        var computeCurrentSensorState = new ComputeCurrentSensorState();
         var state = computeCurrentSensorState.compute(sensor, warning, alert);
 
         return state.getState();

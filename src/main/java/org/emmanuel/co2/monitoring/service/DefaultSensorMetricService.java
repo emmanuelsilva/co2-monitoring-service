@@ -23,7 +23,7 @@ public class DefaultSensorMetricService implements SensorMetricService {
         var measurements = this.repository
                 .findAllMeasurementBySensorIdAndTimestampAfter(sensorId, last30DaysPeriod);
 
-        SensorMetricCalculator sensorMetricCalculator = new SensorMetricCalculator();
+        var sensorMetricCalculator = new SensorMetricCalculator();
         return sensorMetricCalculator.computeMetrics(measurements);
     }
 }

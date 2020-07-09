@@ -26,7 +26,7 @@ public class SensorMeasuredEventHandler {
     public void handleMeasuredEvent(SensorMeasuredEvent event) {
         var measurement = event.getMeasurement();
         var sensor = measurement.getSensor();
-        CurrentSensorState currentState = getCurrentSensorState(sensor);
+        var currentState = getCurrentSensorState(sensor);
 
         var changeSensorState = new ChangeSensorState();
         var nextState = changeSensorState.change(currentState, measurement);
@@ -43,7 +43,7 @@ public class SensorMeasuredEventHandler {
         var warning = sensorWarningRepository.findActiveBySensorId(sensor.getId()).orElse(null);
         var alert = sensorAlertRepository.findActiveBySensorId(sensor.getId()).orElse(null);
 
-        ComputeCurrentSensorState sensorState = new ComputeCurrentSensorState();
+        var sensorState = new ComputeCurrentSensorState();
         return sensorState.compute(sensor, warning, alert);
     }
 }

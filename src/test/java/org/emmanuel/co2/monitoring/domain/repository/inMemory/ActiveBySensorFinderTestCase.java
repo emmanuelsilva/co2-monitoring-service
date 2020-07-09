@@ -15,7 +15,7 @@ abstract class ActiveBySensorFinderTestCase<T extends HasSensor> extends InMemor
     abstract T getInactiveMock();
 
     @Test
-    void shouldNotReturnActiveSensorWhenThereIsNotActive() {
+    void shouldNotReturnActiveSensorWhenThereIsNoActive() {
         T inactiveEntity = super.saveToRepository(getInactiveMock());
         var noActiveResultOpt = getActiveFinder().findActiveBySensorId(inactiveEntity.getSensor().getId());
         assertFalse(noActiveResultOpt.isPresent());

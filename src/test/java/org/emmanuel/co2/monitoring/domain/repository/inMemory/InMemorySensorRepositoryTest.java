@@ -31,7 +31,7 @@ class InMemorySensorRepositoryTest {
         var saved = this.repository.save(sensor);
 
         var searchSensorOpt = this.repository.findById(saved.getId());
-        assertSensorWasFind(saved, searchSensorOpt);
+        assertSensorWasFound(saved, searchSensorOpt);
     }
 
     @Test
@@ -40,7 +40,7 @@ class InMemorySensorRepositoryTest {
         assertFalse(searchSensorOpt.isPresent());
     }
 
-    private void assertSensorWasFind(Sensor saved, Optional<Sensor> searchSensorOpt) {
+    private void assertSensorWasFound(Sensor saved, Optional<Sensor> searchSensorOpt) {
         assertTrue(searchSensorOpt.isPresent());
         assertEquals(saved, searchSensorOpt.get());
     }

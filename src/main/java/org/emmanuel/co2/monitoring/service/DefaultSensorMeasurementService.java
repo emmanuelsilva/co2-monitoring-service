@@ -43,7 +43,7 @@ class DefaultSensorMeasurementService implements SensorMeasurementService {
     }
 
     private SensorMeasurement saveMeasurement(Sensor sensor, SensorMeasurementRequest request) {
-        CreateSensorMeasurement createSensorMeasurement = new CreateSensorMeasurement();
+        var createSensorMeasurement = new CreateSensorMeasurement();
         var sensorMeasurement = createSensorMeasurement.create(sensor, request);
         return this.sensorMeasurementRepository.save(sensorMeasurement);
     }
