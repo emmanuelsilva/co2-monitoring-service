@@ -34,10 +34,10 @@ public class SensorWarning implements HasSensor {
         return endAt == null;
     }
 
-    public static SensorWarning create(Sensor sensor, OffsetDateTime timestamp) {
+    public static SensorWarning create(Sensor sensor, OffsetDateTime startAt) {
         return new SensorWarning(
                 sensor,
-                timestamp,
+                startAt,
                 null,
                 new ArrayList<>(),
                 new ArrayList<>());

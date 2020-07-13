@@ -1,6 +1,10 @@
 package org.emmanuel.co2.monitoring.business.changeState;
 
+import org.emmanuel.co2.monitoring.domain.entity.SensorAlert;
+import org.emmanuel.co2.monitoring.domain.entity.SensorWarning;
 import org.junit.jupiter.api.Test;
+
+import java.time.OffsetDateTime;
 
 class ChangeSensorStateTest extends BaseSensorStateRuleTestCase {
 
@@ -8,9 +12,9 @@ class ChangeSensorStateTest extends BaseSensorStateRuleTestCase {
     void shouldChangeToWarningState() {
         var sensor = givenSensor();
         var okState = super.givenOKState(sensor);
-        var higherThresholdMeasurement =  super.getHigherThresholdMeasurement(sensor);
+        var exceededMeasurement =  super.createExceededMeasurement(sensor);
 
-        var changeSensorState = new ChangeSensorState(okState, higherThresholdMeasurement);
+        var changeSensorState = new ChangeSensorState(okState, exceededMeasurement);
 
         var newState = changeSensorState.change();
         assertThatSensorStatusWasChangedToWarn(newState);
@@ -20,7 +24,7 @@ class ChangeSensorStateTest extends BaseSensorStateRuleTestCase {
     void shouldChangeToOKStateWhenSensorIsWarnState() {
         var sensor = givenSensor();
         var warningState = super.givenWarnState(sensor);
-        var lowerThresholdMeasurement =super.getLowerThresholdMeasurement(sensor);
+        var lowerThresholdMeasurement =super.createLowerThanThresholdMeasurement(sensor);
 
         var changeSensorState = new ChangeSensorState(warningState, lowerThresholdMeasurement);
 
@@ -32,8 +36,8 @@ class ChangeSensorStateTest extends BaseSensorStateRuleTestCase {
     void shouldIncrementWarningCounter() {
         var sensor = givenSensor();
         var warningState = super.givenWarnState(sensor);
-        var higherThresholdMeasurement =  super.getHigherThresholdMeasurement(sensor);
-        var changeSensorState = new ChangeSensorState(warningState, higherThresholdMeasurement);
+        var exceededMeasurement =  super.createExceededMeasurement(sensor);
+        var changeSensorState = new ChangeSensorState(warningState, exceededMeasurement);
 
         var newState = changeSensorState.change();
 
@@ -42,21 +46,24 @@ class ChangeSensorStateTest extends BaseSensorStateRuleTestCase {
     }
 
     @Test
-    void shouldChangeToAlertState() {
+    void shouldChangeToAlertStateAfterThreeExceedMeasurements() {
         var sensor = givenSensor();
-        var warningState = super.givenWarningSateWithMaxAttempts(sensor);
-        var higherThresholdMeasurement = super.getHigherThresholdMeasurement(sensor);
-        var changeSensorState = new ChangeSensorState(warningState, higherThresholdMeasurement);
+        var warning = SensorWarning.create(sensor, OffsetDateTime.now());
+        warning.addHigherRead(createExceededMeasurement(sensor));
+        warning.addHigherRead(createExceededMeasurement(sensor));
+
+        var thirdExceededMeasurement =  super.createExceededMeasurement(sensor);
+        var changeSensorState = new ChangeSensorState(buildWarningState(sensor, warning), thirdExceededMeasurement);
 
         var newState = changeSensorState.change();
-        assertThatSensorStatusWasChangedToAlert(higherThresholdMeasurement, newState);
+        assertThatSensorStatusWasChangedToAlert(thirdExceededMeasurement, newState);
     }
 
     @Test
     void shouldIncrementLowerReadWhenSensorIsInAlertState() {
         var sensor = givenSensor();
         var alertState = givenAlertState(sensor);
-        var lowerThresholdMeasurement =super.getLowerThresholdMeasurement(sensor);
+        var lowerThresholdMeasurement = super.createLowerThanThresholdMeasurement(sensor);
         var changeSensorState = new ChangeSensorState(alertState, lowerThresholdMeasurement);
 
         var newState = changeSensorState.change();
@@ -64,11 +71,15 @@ class ChangeSensorStateTest extends BaseSensorStateRuleTestCase {
     }
 
     @Test
-    void shouldChangeToOKStateWhenSensorIsAlertState() {
+    void shouldChangeFromAlertToOKStateAfterThreeLowerThanThresholdMeasurement() {
         var sensor = givenSensor();
-        var alertState = givenAlertStateWithMaxLowerAttempts(sensor);
-        var lowerThresholdMeasurement = super.getLowerThresholdMeasurement(sensor);
-        var changeSensorState = new ChangeSensorState(alertState, lowerThresholdMeasurement);
+
+        var alert = SensorAlert.create(sensor, now());
+        alert.addLowerRead(createLowerThanThresholdMeasurement(sensor));
+        alert.addLowerRead(createLowerThanThresholdMeasurement(sensor));
+
+        var thirdLowerMeasurement = super.createLowerThanThresholdMeasurement(sensor);
+        var changeSensorState = new ChangeSensorState(buildAlertState(alert), thirdLowerMeasurement);
 
         var newState = changeSensorState.change();
         assertThatSensorStatusWasChangedFromAlertToOK(newState);

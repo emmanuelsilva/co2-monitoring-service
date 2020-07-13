@@ -28,8 +28,7 @@ public abstract class BaseSensorStateRuleTestCase {
         return OffsetDateTime.now();
     }
 
-    protected CurrentSensorState givenWarningSateWithMaxAttempts(Sensor sensor) {
-        SensorWarning warning = buildSensorWarningWithMaxAttempts(sensor);
+    protected CurrentSensorState buildWarningState(Sensor sensor, SensorWarning warning) {
         return CurrentSensorState
                 .builder()
                 .sensor(sensor)
@@ -42,14 +41,14 @@ public abstract class BaseSensorStateRuleTestCase {
         var warning = SensorWarning.create(sensor, now());
 
         IntStream.range(1, SensorThresholdConfiguration.MAX_ATTEMPTS.value())
-                .forEach(i -> warning.addHigherRead(getHigherThresholdMeasurement(sensor)));
+                .forEach(i -> warning.addHigherRead(createExceededMeasurement(sensor)));
 
         return warning;
     }
 
     protected CurrentSensorState givenWarnState(Sensor sensor) {
         var warning = SensorWarning.create(sensor, OffsetDateTime.now());
-        warning.addHigherRead(getHigherThresholdMeasurement(sensor));
+        warning.addHigherRead(createExceededMeasurement(sensor));
 
         return CurrentSensorState
                 .builder()
@@ -72,28 +71,23 @@ public abstract class BaseSensorStateRuleTestCase {
                 .build();
     }
 
-    protected CurrentSensorState givenAlertStateWithMaxLowerAttempts(Sensor sensor) {
-        var alert = SensorAlert.create(sensor, now());
-
-        IntStream.range(1, SensorThresholdConfiguration.MAX_ATTEMPTS.value())
-                .forEach(i -> alert.addLowerRead(getLowerThresholdMeasurement(sensor)));
-
+    protected CurrentSensorState buildAlertState(SensorAlert alert) {
         return CurrentSensorState
                 .builder()
-                .sensor(sensor)
+                .sensor(alert.getSensor())
                 .state(SensorState.ALERT)
                 .alert(alert)
                 .build();
     }
 
-    protected SensorMeasurement getHigherThresholdMeasurement(Sensor sensor) {
+    protected SensorMeasurement createExceededMeasurement(Sensor sensor) {
         return new SensorMeasurement(
                 sensor,
                 SensorThresholdConfiguration.THRESHOLD.value() + 500,
                 OffsetDateTime.now());
     }
 
-    protected SensorMeasurement getLowerThresholdMeasurement(Sensor sensor) {
+    protected SensorMeasurement createLowerThanThresholdMeasurement(Sensor sensor) {
         return new SensorMeasurement(
                 sensor,
                 SensorThresholdConfiguration.THRESHOLD.value() - 100,
