@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.OffsetDateTime;
 
-class ChangeSensorStateTest extends BaseSensorStateRuleTestCase {
+class ChangeSensorStateTest extends BaseChangeSensorStateTest {
 
     @Test
     void shouldChangeToWarningState() {

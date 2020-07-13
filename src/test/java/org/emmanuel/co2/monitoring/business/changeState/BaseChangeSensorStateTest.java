@@ -9,7 +9,7 @@ import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public abstract class BaseSensorStateRuleTestCase {
+public abstract class BaseChangeSensorStateTest {
 
     protected Sensor givenSensor() {
         var sensor = new Sensor("123");
