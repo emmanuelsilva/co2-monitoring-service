@@ -1,16 +1,8 @@
 package org.emmanuel.co2.monitoring.business.changeState;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class ChangeSensorStateTest extends BaseSensorStateRuleTestCase {
-
-    private ChangeSensorState changeSensorState;
-
-    @BeforeEach
-    void setUp() {
-        this.changeSensorState = new ChangeSensorState();
-    }
 
     @Test
     void shouldChangeToWarningState() {
@@ -18,7 +10,9 @@ class ChangeSensorStateTest extends BaseSensorStateRuleTestCase {
         var okState = super.givenOKState(sensor);
         var higherThresholdMeasurement =  super.getHigherThresholdMeasurement(sensor);
 
-        var newState = this.changeSensorState.change(okState, higherThresholdMeasurement);
+        var changeSensorState = new ChangeSensorState(okState, higherThresholdMeasurement);
+
+        var newState = changeSensorState.change();
         assertThatSensorStatusWasChangedToWarn(newState);
     }
 
@@ -28,7 +22,9 @@ class ChangeSensorStateTest extends BaseSensorStateRuleTestCase {
         var warningState = super.givenWarnState(sensor);
         var lowerThresholdMeasurement =super.getLowerThresholdMeasurement(sensor);
 
-        var newState = this.changeSensorState.change(warningState, lowerThresholdMeasurement);
+        var changeSensorState = new ChangeSensorState(warningState, lowerThresholdMeasurement);
+
+        var newState = changeSensorState.change();
         assertThatSensorStatusWasChangedFromWarnToOK(newState);
     }
 
@@ -37,7 +33,9 @@ class ChangeSensorStateTest extends BaseSensorStateRuleTestCase {
         var sensor = givenSensor();
         var warningState = super.givenWarnState(sensor);
         var higherThresholdMeasurement =  super.getHigherThresholdMeasurement(sensor);
-        var newState = this.changeSensorState.change(warningState, higherThresholdMeasurement);
+        var changeSensorState = new ChangeSensorState(warningState, higherThresholdMeasurement);
+
+        var newState = changeSensorState.change();
 
         var expectedIncrementedHighReads = warningState.getWarning().get().getHigherReads().size() + 1;
         assertThatWarningCounterWasIncremented(newState, expectedIncrementedHighReads);
@@ -48,8 +46,9 @@ class ChangeSensorStateTest extends BaseSensorStateRuleTestCase {
         var sensor = givenSensor();
         var warningState = super.givenWarningSateWithMaxAttempts(sensor);
         var higherThresholdMeasurement = super.getHigherThresholdMeasurement(sensor);
+        var changeSensorState = new ChangeSensorState(warningState, higherThresholdMeasurement);
 
-        var newState = this.changeSensorState.change(warningState, higherThresholdMeasurement);
+        var newState = changeSensorState.change();
         assertThatSensorStatusWasChangedToAlert(higherThresholdMeasurement, newState);
     }
 
@@ -58,8 +57,9 @@ class ChangeSensorStateTest extends BaseSensorStateRuleTestCase {
         var sensor = givenSensor();
         var alertState = givenAlertState(sensor);
         var lowerThresholdMeasurement =super.getLowerThresholdMeasurement(sensor);
+        var changeSensorState = new ChangeSensorState(alertState, lowerThresholdMeasurement);
 
-        var newState = this.changeSensorState.change(alertState, lowerThresholdMeasurement);
+        var newState = changeSensorState.change();
         assertThatAlertLowerCounterWasIncremented(newState);
     }
 
@@ -67,9 +67,10 @@ class ChangeSensorStateTest extends BaseSensorStateRuleTestCase {
     void shouldChangeToOKStateWhenSensorIsAlertState() {
         var sensor = givenSensor();
         var alertState = givenAlertStateWithMaxLowerAttempts(sensor);
-        var lowerThresholdMeasurement =super.getLowerThresholdMeasurement(sensor);
+        var lowerThresholdMeasurement = super.getLowerThresholdMeasurement(sensor);
+        var changeSensorState = new ChangeSensorState(alertState, lowerThresholdMeasurement);
 
-        var newState = this.changeSensorState.change(alertState, lowerThresholdMeasurement);
+        var newState = changeSensorState.change();
         assertThatSensorStatusWasChangedFromAlertToOK(newState);
     }
 }

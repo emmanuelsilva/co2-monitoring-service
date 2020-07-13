@@ -135,8 +135,6 @@ public abstract class BaseSensorStateRuleTestCase {
         var alert = newState.getAlert().get();
 
         var expectedReads = new ArrayList<>(warning.getHigherReads());
-        expectedReads.add(higherThresholdMeasurement.getValue());
-
         assertEquals(expectedReads, alert.getHigherReads());
     }
 

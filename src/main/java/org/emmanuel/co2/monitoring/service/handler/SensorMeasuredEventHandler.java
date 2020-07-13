@@ -28,8 +28,8 @@ public class SensorMeasuredEventHandler {
         var sensor = measurement.getSensor();
         var currentState = getCurrentSensorState(sensor);
 
-        var changeSensorState = new ChangeSensorState();
-        var nextState = changeSensorState.change(currentState, measurement);
+        var changeSensorState = new ChangeSensorState(currentState, measurement);
+        var nextState = changeSensorState.change();
 
         log.info("current sensor state {}", currentState);
         log.info("processing new measured event {}", measurement);

@@ -32,7 +32,7 @@ public class SensorAlert extends SensorWarning {
                 new ArrayList<>());
     }
 
-    public static SensorAlert end(SensorAlert alert, OffsetDateTime endAt) {
+    public static SensorAlert solve(SensorAlert alert, OffsetDateTime endAt) {
         return new SensorAlert(
                 alert.getSensor(),
                 alert.getStartAt(),
@@ -47,6 +47,6 @@ public class SensorAlert extends SensorWarning {
                 warning.getStartAt(),
                 null,
                 new ArrayList<>(warning.getHigherReads()),
-                new ArrayList<>());
+                new ArrayList<>(warning.getLowerReads()));
     }
 }
